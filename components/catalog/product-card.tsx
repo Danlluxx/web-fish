@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button";
 import { getPrimaryProductMedia } from "@/lib/catalog/media";
+import { formatPrice } from "@/lib/price";
 import { buildProductPath } from "@/lib/catalog/urls";
 import type { Product } from "@/types/catalog";
 
@@ -34,6 +35,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link href={productHref} className="product-card__title">
           {product.title}
         </Link>
+
+        <div className="product-card__price">{formatPrice(product.price)}</div>
 
         <div className="product-card__footer">
           <Link href={productHref} className="product-card__cta">

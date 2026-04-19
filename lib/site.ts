@@ -3,10 +3,10 @@ export const siteConfig = {
   description:
     "Минималистичный сайт-каталог аквариумных рыб, беспозвоночных, амфибий и растений с отдельным Excel-прайсом.",
   siteUrl: "https://example.com",
-  phoneHref: "tel:89997776655",
-  phoneLabel: "8 999 777 77 77",
-  telegramUrl: "https://t.me/Marrko3310",
-  telegramHandle: "@Marrko3310",
+  phoneHref: "tel:+79130220796",
+  phoneLabel: "+7 913 022 0796",
+  telegramUrl: "https://t.me/VS_o_rybkah",
+  telegramHandle: "@VS_o_rybkah",
   priceListHref: "/files/AquaMarket-10-04.xlsx",
   priceListLabel: "Скачать прайс-лист Excel"
 };

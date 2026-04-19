@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/catalog/product-card";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button";
 import { getProductMedia } from "@/lib/catalog/media";
+import { formatPrice } from "@/lib/price";
 import { buildCatalogPath } from "@/lib/catalog/urls";
 import { siteConfig } from "@/lib/site";
 import type { Product } from "@/types/catalog";
@@ -54,6 +55,10 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
           <div className="product-summary-card">
             <span className="eyebrow">Карточка товара</span>
             <h1>{product.title}</h1>
+            <div className="product-summary-card__price-block">
+              <span>Цена</span>
+              <strong>{formatPrice(product.price)}</strong>
+            </div>
             <p>{product.description}</p>
 
             <dl className="product-attributes">

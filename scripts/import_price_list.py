@@ -182,10 +182,8 @@ def build_summary(title: str, category: str, subcategory: str) -> str:
 def build_description(title: str, category: str, subcategory: str) -> str:
     return (
         f"Позиция «{title}» относится к категории «{category}» "
-        f"и подкатегории «{subcategory}» в прайс-листе AquaMarket. "
-        "Название сохранено в каталоге без изменений, чтобы клиенту было удобно "
-        "сопоставлять карточку товара с Excel-прайсом и заказом. "
-        "На сайте показываются фото и описание, а актуальную цену и наличие можно смотреть в отдельном Excel-файле."
+        f"и подкатегории «{subcategory}». "
+        "Название совпадает с названием в прайс-листе."
     )
 
 

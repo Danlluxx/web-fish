@@ -5,6 +5,7 @@ import { useMemo, useState, type FormEvent } from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
 import { getPrimaryProductMedia } from "@/lib/catalog/media";
+import { formatPrice, rubleFormatter } from "@/lib/price";
 import { buildCatalogPath, buildProductPath } from "@/lib/catalog/urls";
 import type { Product } from "@/types/catalog";
 
@@ -74,6 +75,17 @@ export function CartPageClient({ products }: CartPageClientProps) {
         quantity: itemMap.get(product.slug) ?? 1
       }));
   }, [items, products]);
+
+  const totalAmount = useMemo(
+    () =>
+      cartProducts.reduce((sum, { product, quantity }) => sum + (product.price ?? 0) * quantity, 0),
+    [cartProducts]
+  );
+
+  const missingPriceCount = useMemo(
+    () => cartProducts.filter(({ product }) => product.price == null).length,
+    [cartProducts]
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -196,13 +208,18 @@ export function CartPageClient({ products }: CartPageClientProps) {
           </div>
 
           <div className="catalog-hero__stats">
-            <div>
+            <div className="catalog-hero__stat">
               <strong>{uniqueItemsCount}</strong>
               <span>позиций в корзине</span>
             </div>
-            <div>
+            <div className="catalog-hero__stat">
               <strong>{totalQuantity}</strong>
               <span>единиц к заказу</span>
+            </div>
+            <div className="catalog-hero__stat catalog-hero__stat--accent">
+              <strong>{rubleFormatter.format(totalAmount)}</strong>
+              <span>сумма заказа</span>
+              {missingPriceCount > 0 ? <small>Для {missingPriceCount} позиций цена пока не указана</small> : null}
             </div>
           </div>
         </div>
@@ -235,6 +252,11 @@ export function CartPageClient({ products }: CartPageClientProps) {
                       <Link href={buildProductPath(product.slug)} className="cart-item__title">
                         {product.title}
                       </Link>
+
+                      <div className="cart-item__pricing">
+                        <span>{product.price != null ? `${formatPrice(product.price)} / шт` : formatPrice(product.price)}</span>
+                        <strong>{product.price != null ? formatPrice(product.price * quantity) : "—"}</strong>
+                      </div>
 
                       <div className="cart-item__controls">
                         <div className="cart-qty">
@@ -278,6 +300,19 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   </article>
                 );
               })}
+            </div>
+
+            <div className="cart-summary-panel">
+              <div className="cart-summary-panel__copy">
+                <span className="eyebrow">Итог по корзине</span>
+                <h3>Сумма заказа</h3>
+                <p>
+                  {missingPriceCount > 0
+                    ? `Учтены все товары с доступной ценой. Для ${missingPriceCount} позиций стоимость пока не указана.`
+                    : "Общая сумма автоматически пересчитывается при изменении количества товаров."}
+                </p>
+              </div>
+              <div className="cart-summary-panel__amount">{rubleFormatter.format(totalAmount)}</div>
             </div>
           </section>
 
