@@ -1,0 +1,12 @@
+.next
+node_modules
+*.log
+.DS_Store
+.env
+.env.local
+.env.production
+.env.development
+Archive.zip
+1AquaMarketPhotos
+data/orders
+tsconfig.tsbuildinfo

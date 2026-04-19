@@ -1,0 +1,38 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+
+import { CartProvider } from "@/components/cart/cart-provider";
+import { FavoritesProvider } from "@/components/favorites/favorites-provider";
+import { SiteFooter } from "@/components/shared/site-footer";
+import { SiteHeader } from "@/components/shared/site-header";
+import { getAllProducts } from "@/lib/catalog/service";
+import { siteConfig } from "@/lib/site";
+
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: {
+    default: `${siteConfig.name} | Каталог товаров`,
+    template: `%s | ${siteConfig.name}`
+  },
+  description: siteConfig.description
+};
+
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const products = await getAllProducts();
+  const validSlugs = products.map((product) => product.slug);
+
+  return (
+    <html lang="ru">
+      <body>
+        <FavoritesProvider validSlugs={validSlugs}>
+          <CartProvider validSlugs={validSlugs}>
+            <SiteHeader />
+            <main className="shell main-shell">{children}</main>
+            <SiteFooter />
+          </CartProvider>
+        </FavoritesProvider>
+      </body>
+    </html>
+  );
+}
