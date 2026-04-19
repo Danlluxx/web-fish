@@ -73,11 +73,7 @@ export function PriceImportForm({
         <div className="catalog-hero__header">
           <div>
             <span className="eyebrow">Обновление прайса</span>
-            <h1>Загрузка нового Excel</h1>
-            <p>
-              Загружайте новый прайс прямо через сайт. После успешного импорта каталог,
-              цены и кнопка скачивания прайса обновятся автоматически без пересборки проекта.
-            </p>
+            <h1>Загрузка нового Excel-прайса</h1>
           </div>
 
           <div className="catalog-hero__stats">
