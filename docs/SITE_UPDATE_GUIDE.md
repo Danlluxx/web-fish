@@ -1,0 +1,84 @@
+# Методичка По Обновлению Сайта
+
+## Ежедневное обновление прайса без пересборки
+
+Теперь для обновления каталога не нужно:
+
+- пересобирать сайт
+- перезапускать `pm2`
+- делать `git push` для каждого нового Excel
+
+Рабочий путь такой:
+
+1. Открыть страницу администратора:
+
+`/admin/price-list`
+
+2. Ввести токен администратора `ADMIN_PRICE_IMPORT_TOKEN`
+3. Выбрать новый `.xlsx`
+4. Нажать кнопку загрузки
+
+После этого сервер:
+
+- сохранит новый Excel
+- обновит `data/catalog.generated.json`
+- обновит файл скачивания `public/files/current-price.xlsx`
+- сразу покажет новые товары и цены на сайте
+
+## Что нужно настроить на сервере один раз
+
+В `.env.local` должен быть токен:
+
+```env
+ADMIN_PRICE_IMPORT_TOKEN=сложный_секретный_токен
+```
+
+После изменения `.env.local`:
+
+```bash
+pm2 restart aquamarket
+```
+
+## Если нужно обычное обновление кода
+
+### Локально
+
+```bash
+cd /Users/danlluxx/web-fish
+npm run build
+git add .
+git commit -m "Обновление сайта"
+git push origin main
+```
+
+### На сервере
+
+```bash
+ssh root@ВАШ_IP_СЕРВЕРА
+su - nodejs
+cd /var/www/html
+git pull
+npm install
+npm run build
+pm2 restart aquamarket
+pm2 status
+```
+
+## Если нужно обновить фотографии
+
+```bash
+cd /Users/danlluxx/web-fish
+npm run import:photos
+git add .
+git commit -m "Обновил фотографии товаров"
+git push origin main
+```
+
+Потом на сервере:
+
+```bash
+cd /var/www/html
+git pull
+npm run build
+pm2 restart aquamarket
+```

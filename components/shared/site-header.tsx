@@ -7,8 +7,8 @@ import { HeaderCategoriesNav } from "@/components/shared/header-categories-nav";
 import { getSections } from "@/lib/catalog/service";
 import { siteConfig } from "@/lib/site";
 
-export function SiteHeader() {
-  const sections = getSections();
+export async function SiteHeader() {
+  const sections = await getSections();
   const sectionOrder = ["rasteniya", "amfibii", "bespozvonochnye", "ryby"] as const;
   const orderedSections = sectionOrder
     .map((slug) => sections.find((section) => section.slug === slug))

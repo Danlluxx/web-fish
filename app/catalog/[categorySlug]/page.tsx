@@ -10,15 +10,9 @@ interface CategoryPageProps {
   searchParams: Promise<RawSearchParams>;
 }
 
-export async function generateStaticParams() {
-  return getSections().map((section) => ({
-    categorySlug: section.slug
-  }));
-}
-
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { categorySlug } = await params;
-  const section = getSectionBySlug(categorySlug);
+  const section = await getSectionBySlug(categorySlug);
 
   if (!section) {
     return {};
@@ -32,7 +26,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { categorySlug } = await params;
-  const section = getSectionBySlug(categorySlug);
+  const section = await getSectionBySlug(categorySlug);
 
   if (!section) {
     notFound();

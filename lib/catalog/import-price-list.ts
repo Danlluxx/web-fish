@@ -1,0 +1,56 @@
+import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+import { execFile } from "node:child_process";
+
+import { getRuntimeCatalogMeta } from "@/lib/catalog/data-source";
+
+const execFileAsync = promisify(execFile);
+
+const STORAGE_DIR = path.join(process.cwd(), "storage");
+const PRICE_LISTS_DIR = path.join(STORAGE_DIR, "price-lists");
+const CURRENT_PRICE_PATH = path.join(STORAGE_DIR, "current-price.xlsx");
+const PUBLIC_PRICE_PATH = path.join(process.cwd(), "public", "files", "current-price.xlsx");
+const CATALOG_JSON_PATH = path.join(process.cwd(), "data", "catalog.generated.json");
+
+function sanitizeFilename(value: string): string {
+  return value.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, "") || "price-list.xlsx";
+}
+
+export function getCurrentPricePublicPath() {
+  return "/files/current-price.xlsx";
+}
+
+export interface ImportedPriceListResult {
+  catalogTitle: string;
+  sourceFileName: string;
+  importedAt: string;
+  productCount: number;
+}
+
+export async function importPriceListFromBuffer(fileName: string, content: Buffer): Promise<ImportedPriceListResult> {
+  await mkdir(PRICE_LISTS_DIR, { recursive: true });
+  await mkdir(path.dirname(PUBLIC_PRICE_PATH), { recursive: true });
+
+  const safeName = sanitizeFilename(fileName);
+  const datedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeName}`;
+  const storedSourcePath = path.join(PRICE_LISTS_DIR, datedName);
+
+  await writeFile(storedSourcePath, content);
+  await copyFile(storedSourcePath, CURRENT_PRICE_PATH);
+
+  await execFileAsync("python3", [
+    path.join(process.cwd(), "scripts", "import_price_list.py"),
+    storedSourcePath,
+    "--output",
+    CATALOG_JSON_PATH,
+    "--copy-price-list-to",
+    PUBLIC_PRICE_PATH
+  ]);
+
+  return getRuntimeCatalogMeta();
+}
+
+export function getAdminImportToken() {
+  return process.env.ADMIN_PRICE_IMPORT_TOKEN?.trim() ?? "";
+}

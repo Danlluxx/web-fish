@@ -7,6 +7,6 @@ export const siteConfig = {
   phoneLabel: "+7 913 022 0796",
   telegramUrl: "https://t.me/VS_o_rybkah",
   telegramHandle: "@VS_o_rybkah",
-  priceListHref: "/files/AquaMarket-10-04.xlsx",
+  priceListHref: "/files/current-price.xlsx",
   priceListLabel: "Скачать прайс-лист Excel"
 };

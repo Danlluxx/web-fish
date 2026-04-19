@@ -4,7 +4,7 @@ import { getAllProducts, getSections } from "@/lib/catalog/service";
 import { siteConfig } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const sections = getSections();
+  const sections = await getSections();
   const products = await getAllProducts();
 
   return [

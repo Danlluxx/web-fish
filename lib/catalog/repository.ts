@@ -1,4 +1,4 @@
-import { PRODUCTS } from "@/data/products";
+import { getRuntimeCatalogProducts } from "@/lib/catalog/data-source";
 import type { Product } from "@/types/catalog";
 
 export interface ProductRepository {
@@ -8,11 +8,12 @@ export interface ProductRepository {
 
 class InMemoryProductRepository implements ProductRepository {
   async getAll(): Promise<Product[]> {
-    return PRODUCTS;
+    return getRuntimeCatalogProducts();
   }
 
   async getBySlug(slug: string): Promise<Product | null> {
-    return PRODUCTS.find((product) => product.slug === slug) ?? null;
+    const products = await getRuntimeCatalogProducts();
+    return products.find((product) => product.slug === slug) ?? null;
   }
 }
 

@@ -1962,6 +1962,28 @@ p {
   box-shadow: var(--shadow);
 }
 
+.admin-import-layout {
+  display: grid;
+  gap: 22px;
+}
+
+.admin-import-panel {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-import__success {
+  margin: 0;
+  color: #166534;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 @media (max-width: 1080px) {
   .site-header__main,
   .hero-panel,

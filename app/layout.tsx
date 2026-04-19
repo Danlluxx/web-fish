@@ -10,6 +10,8 @@ import { siteConfig } from "@/lib/site";
 
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: `${siteConfig.name} | Каталог товаров`,

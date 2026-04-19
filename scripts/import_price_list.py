@@ -373,7 +373,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--copy-price-list-to",
-        default="public/files/AquaMarket-10-04.xlsx",
+        default="public/files/current-price.xlsx",
         help="Optional path to copy the original price list for public download",
     )
     args = parser.parse_args()

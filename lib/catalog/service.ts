@@ -1,4 +1,4 @@
-import { CATALOG_SECTIONS } from "@/data/products";
+import { getRuntimeCatalogSections } from "@/lib/catalog/data-source";
 import { productRepository } from "@/lib/catalog/repository";
 import { clamp, normalizeText } from "@/lib/catalog/utils";
 import type {
@@ -109,22 +109,26 @@ function applyFilters(products: Product[], filters: CatalogFilters): Product[] {
     .map((entry) => entry.product);
 }
 
-function buildCategoryOptions(products: Product[]): FilterOption[] {
-  return CATALOG_SECTIONS.map((section) => ({
+function buildCategoryOptions(products: Product[], sections: CatalogSection[]): FilterOption[] {
+  return sections.map((section) => ({
     title: section.title,
     slug: section.slug,
     count: products.filter((product) => product.categorySlug === section.slug).length
   })).filter((option) => option.count > 0);
 }
 
-function buildSubcategoryOptions(products: Product[], categorySlug?: string): FilterOption[] {
+function buildSubcategoryOptions(
+  products: Product[],
+  sections: CatalogSection[],
+  categorySlug?: string
+): FilterOption[] {
   const matchingSection = categorySlug
-    ? CATALOG_SECTIONS.find((section) => section.slug === categorySlug)
+    ? sections.find((section) => section.slug === categorySlug)
     : null;
 
   const source = matchingSection
     ? matchingSection.subcategories
-    : CATALOG_SECTIONS.flatMap((section) => section.subcategories);
+    : sections.flatMap((section) => section.subcategories);
 
   return source
     .map((subcategory) => ({
@@ -137,6 +141,7 @@ function buildSubcategoryOptions(products: Product[], categorySlug?: string): Fi
 
 export async function getCatalogResult(filters: CatalogFilters): Promise<CatalogResult> {
   const pageSize = filters.pageSize ?? DEFAULT_PAGE_SIZE;
+  const sections = await getRuntimeCatalogSections();
   const allProducts = await productRepository.getAll();
   const filteredProducts = applyFilters(allProducts, filters);
   const total = filteredProducts.length;
@@ -151,11 +156,12 @@ export async function getCatalogResult(filters: CatalogFilters): Promise<Catalog
     page,
     pageSize,
     totalPages,
-    categoryOptions: buildCategoryOptions(allProducts),
+    categoryOptions: buildCategoryOptions(allProducts, sections),
     subcategoryOptions: buildSubcategoryOptions(
       allProducts.filter((product) =>
         filters.categorySlug ? product.categorySlug === filters.categorySlug : true
       ),
+      sections,
       filters.categorySlug
     )
   };
@@ -187,17 +193,22 @@ export async function getSimilarProducts(product: Product, limit = 4): Promise<P
     .slice(0, limit);
 }
 
-export function getSections(): CatalogSection[] {
-  return CATALOG_SECTIONS;
+export async function getSections(): Promise<CatalogSection[]> {
+  return getRuntimeCatalogSections();
 }
 
-export function getSectionBySlug(slug: string): CatalogSection | null {
-  return CATALOG_SECTIONS.find((section) => section.slug === slug) ?? null;
+export async function getSectionBySlug(slug: string): Promise<CatalogSection | null> {
+  const sections = await getRuntimeCatalogSections();
+  return sections.find((section) => section.slug === slug) ?? null;
 }
 
-export function getSubcategory(sectionSlug: string, subcategorySlug: string): CatalogSubcategory | null {
+export async function getSubcategory(
+  sectionSlug: string,
+  subcategorySlug: string
+): Promise<CatalogSubcategory | null> {
+  const sections = await getRuntimeCatalogSections();
   return (
-    CATALOG_SECTIONS.find((section) => section.slug === sectionSlug)?.subcategories.find(
+    sections.find((section) => section.slug === sectionSlug)?.subcategories.find(
       (subcategory) => subcategory.slug === subcategorySlug
     ) ?? null
   );

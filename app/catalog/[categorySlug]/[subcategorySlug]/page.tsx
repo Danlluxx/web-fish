@@ -10,19 +10,10 @@ interface SubcategoryPageProps {
   searchParams: Promise<RawSearchParams>;
 }
 
-export async function generateStaticParams() {
-  return getSections().flatMap((section) =>
-    section.subcategories.map((subcategory) => ({
-      categorySlug: section.slug,
-      subcategorySlug: subcategory.slug
-    }))
-  );
-}
-
 export async function generateMetadata({ params }: SubcategoryPageProps): Promise<Metadata> {
   const { categorySlug, subcategorySlug } = await params;
-  const section = getSectionBySlug(categorySlug);
-  const subcategory = getSubcategory(categorySlug, subcategorySlug);
+  const section = await getSectionBySlug(categorySlug);
+  const subcategory = await getSubcategory(categorySlug, subcategorySlug);
 
   if (!section || !subcategory) {
     return {};
@@ -36,8 +27,8 @@ export async function generateMetadata({ params }: SubcategoryPageProps): Promis
 
 export default async function SubcategoryPage({ params, searchParams }: SubcategoryPageProps) {
   const { categorySlug, subcategorySlug } = await params;
-  const section = getSectionBySlug(categorySlug);
-  const subcategory = getSubcategory(categorySlug, subcategorySlug);
+  const section = await getSectionBySlug(categorySlug);
+  const subcategory = await getSubcategory(categorySlug, subcategorySlug);
 
   if (!section || !subcategory) {
     notFound();
