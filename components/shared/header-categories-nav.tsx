@@ -48,6 +48,7 @@ export function HeaderCategoriesNav({ priceListHref, sections }: HeaderCategorie
       <nav
         className="site-nav site-nav--categories"
         aria-label="Категории каталога"
+        data-items={navColumns}
         style={{ "--nav-columns": navColumns } as CSSProperties}
       >
         <a href={priceListHref} target="_blank" rel="noreferrer" className="site-nav__item site-nav__item--accent">
