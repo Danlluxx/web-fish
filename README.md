@@ -25,8 +25,9 @@
 - Оформление заказа через `POST /api/orders`.
 - Отправка Excel-файла заказа на почту менеджера, если настроен SMTP.
 - SEO-маршруты, `sitemap`, `robots`.
-- Отдельный Excel-прайс в `public/files/current-price.xlsx`.
+- Отдельный Excel-прайс, который скачивается через `GET /api/price-list`.
 - API:
+  - `GET /api/price-list`
   - `GET /api/products`
   - `GET /api/products/[slug]`
   - `GET /api/search`
@@ -41,11 +42,19 @@
   - читает `.xlsx` напрямую через стандартную библиотеку Python;
   - восстанавливает категории, подкатегории и товары из Excel-прайса;
   - генерирует `data/catalog.generated.json`;
-  - копирует исходный Excel в `public/files/` для скачивания на сайте.
+  - может копировать исходный Excel в отдельный путь для скачивания на сайте.
 
 - `data/catalog.generated.json`
   - содержит уже подготовленные товары и структуру каталога;
   - обновляется повторным импортом нового Excel-файла.
+
+- `storage/current-catalog.generated.json`
+  - runtime-версия каталога на сервере;
+  - обновляется через `/admin/price-list` без конфликтов с Git.
+
+- `storage/current-price.xlsx`
+  - актуальный Excel-прайс на сервере;
+  - скачивается на сайте через `GET /api/price-list`.
 
 - `lib/catalog/repository.ts`
   - интерфейс репозитория и in-memory реализация;
@@ -137,6 +146,8 @@ npm run import:catalog -- "/полный/путь/до/файла.xlsx"
 4. загрузить файл
 
 После этого каталог и текущий прайс обновятся сразу.
+
+Runtime-обновления при этом пишутся в `storage/`, а не в Git-отслеживаемые файлы, поэтому последующие `git pull` больше не должны конфликтовать с текущим прайсом.
 
 ## Запуск
 

@@ -657,11 +657,19 @@ p {
   border-radius: 24px;
   background: #f8fbff;
   box-shadow: var(--shadow-soft);
+  touch-action: pan-y;
 }
 
 .hero-gallery__track {
   display: flex;
   transition: transform 0.28s ease;
+  cursor: grab;
+  user-select: none;
+}
+
+.hero-gallery__track.is-dragging {
+  transition: none;
+  cursor: grabbing;
 }
 
 .hero-gallery__slide {
@@ -672,6 +680,7 @@ p {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+  pointer-events: none;
 }
 
 .hero-gallery__nav {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 const HERO_SLIDES = [
   {
@@ -19,6 +19,10 @@ const HERO_SLIDES = [
 
 export function HomeHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startXRef = useRef(0);
+  const pointerIdRef = useRef<number | null>(null);
 
   function goToSlide(index: number) {
     const total = HERO_SLIDES.length;
@@ -33,16 +37,67 @@ export function HomeHeroGallery() {
     goToSlide(activeIndex + 1);
   }
 
+  function resetDrag() {
+    setDragOffset(0);
+    setIsDragging(false);
+    pointerIdRef.current = null;
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    startXRef.current = event.clientX;
+    pointerIdRef.current = event.pointerId;
+    setIsDragging(true);
+    setDragOffset(0);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    if (!isDragging || pointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    setDragOffset(event.clientX - startXRef.current);
+  }
+
+  function finishGesture(event: ReactPointerEvent<HTMLDivElement>) {
+    if (pointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - startXRef.current;
+    const threshold = 50;
+
+    if (deltaX <= -threshold) {
+      goToNext();
+    } else if (deltaX >= threshold) {
+      goToPrev();
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    resetDrag();
+  }
+
   return (
     <div className="hero-gallery">
       <div className="hero-gallery__viewport">
         <div
-          className="hero-gallery__track"
-          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          className={`hero-gallery__track ${isDragging ? "is-dragging" : ""}`}
+          style={{ transform: `translateX(calc(-${activeIndex * 100}% + ${dragOffset}px))` }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishGesture}
+          onPointerCancel={resetDrag}
         >
           {HERO_SLIDES.map((slide) => (
             <div className="hero-gallery__slide" key={slide.src}>
-              <img src={slide.src} alt={slide.alt} className="hero-gallery__image" />
+              <img src={slide.src} alt={slide.alt} className="hero-gallery__image" draggable={false} />
             </div>
           ))}
         </div>

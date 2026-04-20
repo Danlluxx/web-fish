@@ -38,7 +38,7 @@ export function HomePage({
         <div className="hero-panel__stats">
           <div className="metric-card">
             <strong>{totalProducts} позиций</strong>
-            <span>Очень широкий ассортимент позиций, начиная с самых базовых, заканчивая самыми редкими.</span>
+            <span>Широкий ассортимент аквариумных обитателей и растений.</span>
           </div>
           <div className="metric-card">
             <strong>{sections.length} категории</strong>

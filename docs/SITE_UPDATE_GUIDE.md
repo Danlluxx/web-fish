@@ -21,9 +21,13 @@
 После этого сервер:
 
 - сохранит новый Excel
-- обновит `data/catalog.generated.json`
-- обновит файл скачивания `public/files/current-price.xlsx`
+- обновит `storage/current-catalog.generated.json`
+- обновит файл скачивания `storage/current-price.xlsx`
 - сразу покажет новые товары и цены на сайте
+
+Скачивание прайса для клиентов при этом идёт через:
+
+- `/api/price-list`
 
 ## Что нужно настроить на сервере один раз
 
@@ -38,6 +42,30 @@ ADMIN_PRICE_IMPORT_TOKEN=сложный_секретный_токен
 ```bash
 pm2 restart aquamarket
 ```
+
+## Одноразовый переход сервера на storage
+
+Если до этого прайс уже обновлялся через старую схему и `git pull` конфликтует с:
+
+- `data/catalog.generated.json`
+- `public/files/current-price.xlsx`
+
+сделайте на сервере один раз:
+
+```bash
+cd /var/www/html
+
+mkdir -p storage
+cp data/catalog.generated.json storage/current-catalog.generated.json
+cp public/files/current-price.xlsx storage/current-price.xlsx
+
+git restore data/catalog.generated.json public/files/current-price.xlsx
+git pull origin main
+npm run build
+pm2 restart aquamarket --update-env
+```
+
+После этого новые загрузки прайса будут обновлять только `storage/`, и конфликт `git pull` больше не должен повторяться.
 
 ## Если нужно обычное обновление кода
 

@@ -7,6 +7,6 @@ export const siteConfig = {
   phoneLabel: "+7 913 022 0796",
   telegramUrl: "https://t.me/VS_o_rybkah",
   telegramHandle: "@VS_o_rybkah",
-  priceListHref: "/files/current-price.xlsx",
+  priceListHref: "/api/price-list",
   priceListLabel: "Скачать прайс-лист Excel"
 };
