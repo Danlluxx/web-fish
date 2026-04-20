@@ -12,6 +12,8 @@ import zipfile
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
 
 NS = {
     "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -210,7 +212,12 @@ def extract_article(title: str) -> str | None:
     return normalize_spaces(matches[-1])
 
 
-def parse_catalog(source: Path) -> dict:
+def normalize_display_filename(value: str) -> str:
+    cleaned = normalize_spaces(Path(value).name)
+    return cleaned or "price-list.xlsx"
+
+
+def parse_catalog(source: Path, source_display_name: str | None = None) -> dict:
     with zipfile.ZipFile(source) as zip_file:
         shared_strings = load_shared_strings(zip_file)
         _, sheet_root = extract_title_and_sheet(zip_file)
@@ -352,8 +359,8 @@ def parse_catalog(source: Path) -> dict:
         return {
             "meta": {
                 "catalogTitle": catalog_title,
-                "sourceFileName": source.name,
-                "importedAt": datetime.now().isoformat(timespec="seconds"),
+                "sourceFileName": normalize_display_filename(source_display_name or source.name),
+                "importedAt": datetime.now(ZoneInfo("Asia/Novosibirsk")).isoformat(timespec="seconds"),
                 "productCount": len(products),
             },
             "sections": serialized_sections,
@@ -366,6 +373,11 @@ def main() -> int:
         description="Convert an AquaMarket Excel price list into site-ready catalog JSON."
     )
     parser.add_argument("source", help="Path to the source .xlsx file")
+    parser.add_argument(
+        "--source-display-name",
+        default=None,
+        help="Original file name to keep in catalog metadata for UI display",
+    )
     parser.add_argument(
         "--output",
         default="data/catalog.generated.json",
@@ -383,7 +395,7 @@ def main() -> int:
         print(f"Source file not found: {source}", file=sys.stderr)
         return 1
 
-    catalog = parse_catalog(source)
+    catalog = parse_catalog(source, args.source_display_name)
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

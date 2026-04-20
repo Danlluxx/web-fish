@@ -88,7 +88,11 @@ export function PriceImportForm({
               <span>последний загруженный файл</span>
             </div>
             <div className="catalog-hero__stat catalog-hero__stat--accent">
-              <strong>{new Date(importedAt).toLocaleString("ru-RU")}</strong>
+              <strong>
+                {new Date(importedAt).toLocaleString("ru-RU", {
+                  timeZone: "Asia/Novosibirsk"
+                 })}
+              </strong>
               <span>время последнего импорта</span>
             </div>
           </div>

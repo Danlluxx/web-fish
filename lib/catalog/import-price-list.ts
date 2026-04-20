@@ -42,6 +42,8 @@ export async function importPriceListFromBuffer(fileName: string, content: Buffe
   await execFileAsync("python3", [
     path.join(process.cwd(), "scripts", "import_price_list.py"),
     storedSourcePath,
+    "--source-display-name",
+    fileName,
     "--output",
     CATALOG_JSON_PATH,
     "--copy-price-list-to",
