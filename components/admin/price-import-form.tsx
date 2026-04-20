@@ -21,6 +21,7 @@ export function PriceImportForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setError("");
     setStatus("");
 
@@ -57,9 +58,10 @@ export function PriceImportForm({
       setStatus(
         `Прайс обновлён: ${payload.productCount ?? "—"} товаров, источник ${payload.sourceFileName ?? file.name}.`
       );
+      setError("");
       setFile(null);
       setToken("");
-      event.currentTarget.reset();
+      form.reset();
     } catch {
       setError("Ошибка загрузки. Проверьте соединение и повторите попытку.");
     } finally {
