@@ -63,10 +63,6 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
 
             <dl className="product-attributes">
               <div>
-                <dt>Артикул</dt>
-                <dd>{product.article ?? "Не указан"}</dd>
-              </div>
-              <div>
                 <dt>Категория</dt>
                 <dd>{product.category}</dd>
               </div>
@@ -77,6 +73,10 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               <div>
                 <dt>Обновлено</dt>
                 <dd>{product.updatedAt}</dd>
+              </div>
+              <div className="product-attributes__item product-attributes__item--article">
+                <dt>Артикул</dt>
+                <dd>{product.article ?? "Не указан"}</dd>
               </div>
             </dl>
 

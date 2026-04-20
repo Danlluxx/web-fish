@@ -309,7 +309,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 <p>
                   {missingPriceCount > 0
                     ? `Учтены все товары с доступной ценой. Для ${missingPriceCount} позиций стоимость пока не указана.`
-                    : "Общая сумма автоматически пересчитывается при изменении количества товаров."}
+                    : "Общая сумма заказа указана без учета стоимости доставки."}
                 </p>
               </div>
               <div className="cart-summary-panel__amount">{rubleFormatter.format(totalAmount)}</div>
