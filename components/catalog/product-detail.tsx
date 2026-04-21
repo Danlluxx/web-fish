@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { ProductCard } from "@/components/catalog/product-card";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button";
-import { getProductMedia } from "@/lib/catalog/media";
+import { getProductMedia } from "@/lib/catalog/media-server";
 import { formatPrice } from "@/lib/price";
 import { buildCatalogPath } from "@/lib/catalog/urls";
 import { siteConfig } from "@/lib/site";
@@ -15,9 +15,9 @@ interface ProductDetailProps {
   similarProducts: Product[];
 }
 
-export function ProductDetail({ product, similarProducts }: ProductDetailProps) {
+export async function ProductDetail({ product, similarProducts }: ProductDetailProps) {
   const detailTags = Array.from(new Set(product.tags.concat(product.keywords.slice(0, 2))));
-  const media = getProductMedia(product);
+  const media = await getProductMedia(product);
   const primaryMedia = media[0];
   const galleryMedia = media.slice(1);
 

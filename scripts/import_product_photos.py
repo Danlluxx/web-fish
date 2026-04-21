@@ -5,11 +5,16 @@ import argparse
 import json
 import re
 import shutil
+import tempfile
+import zipfile
+from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+from zoneinfo import ZoneInfo
 
 
 ARTICLE_PATTERN = re.compile(r"[\[(]([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})[\])]\s*$")
+DIRECT_ARTICLE_PATTERN = re.compile(r"^[A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,}$")
 CYRILLIC_TO_LATIN = {
     "А": "a",
     "Б": "b",
@@ -56,6 +61,11 @@ def normalize_article(value: str) -> str:
 
 
 def extract_article(value: str) -> str | None:
+    cleaned = normalize_spaces(value).strip()
+
+    if DIRECT_ARTICLE_PATTERN.fullmatch(cleaned):
+        return normalize_article(cleaned)
+
     match = ARTICLE_PATTERN.search(value)
 
     if not match:
@@ -75,6 +85,11 @@ def article_to_slug(article: str) -> str:
         result.append(CYRILLIC_TO_LATIN.get(character, character.lower()))
 
     return "".join(result)
+
+
+def normalize_display_filename(value: str) -> str:
+    cleaned = normalize_spaces(Path(value).name)
+    return cleaned or "product-photos.zip"
 
 
 def natural_sort_key(path: Path) -> list[tuple[int, int | str]]:
@@ -100,10 +115,26 @@ def iter_image_files(folder: Path) -> Iterable[Path]:
     )
 
 
-def build_manifest(source_dir: Path, output_dir: Path) -> dict[str, dict[str, list[str]]]:
-    articles: dict[str, list[str]] = {}
+def resolve_source_root(source_dir: Path) -> Path:
+    children = [item for item in source_dir.iterdir() if item.name != "__MACOSX"]
 
-    for folder in sorted((item for item in source_dir.iterdir() if item.is_dir()), key=lambda item: item.name.casefold()):
+    if len(children) == 1 and children[0].is_dir():
+        return children[0]
+
+    return source_dir
+
+
+def build_manifest(
+    source_dir: Path,
+    output_dir: Path,
+    base_url: str,
+    source_display_name: str | None = None,
+) -> dict[str, object]:
+    articles: dict[str, list[str]] = {}
+    normalized_base_url = base_url.rstrip("/")
+    source_root = resolve_source_root(source_dir)
+
+    for folder in sorted((item for item in source_root.iterdir() if item.is_dir()), key=lambda item: item.name.casefold()):
         article = extract_article(folder.name)
 
         if not article:
@@ -124,16 +155,41 @@ def build_manifest(source_dir: Path, output_dir: Path) -> dict[str, dict[str, li
             extension = file_path.suffix.lower() or ".png"
             output_file = article_output_dir / f"{index}{extension}"
             shutil.copy2(file_path, output_file)
-            urls.append(f"/images/products/articles/{article_slug}/{index}{extension}")
+            urls.append(f"{normalized_base_url}/{article_slug}/{index}{extension}")
 
         articles[article] = urls
 
-    return {"articles": dict(sorted(articles.items()))}
+    photo_count = sum(len(paths) for paths in articles.values())
+
+    return {
+        "meta": {
+            "sourceFileName": normalize_display_filename(source_display_name or source_dir.name),
+            "importedAt": datetime.now(ZoneInfo("Asia/Novosibirsk")).isoformat(timespec="seconds"),
+            "articleCount": len(articles),
+            "photoCount": photo_count,
+        },
+        "articles": dict(sorted(articles.items())),
+    }
+
+
+def with_source_directory(source: Path) -> tuple[Path, tempfile.TemporaryDirectory[str] | None]:
+    if source.is_dir():
+        return source, None
+
+    if source.is_file() and source.suffix.lower() == ".zip":
+        temp_dir = tempfile.TemporaryDirectory()
+
+        with zipfile.ZipFile(source) as archive:
+            archive.extractall(temp_dir.name)
+
+        return Path(temp_dir.name), temp_dir
+
+    raise SystemExit(f"Source path must be a directory or .zip archive: {source}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Import product photos sorted by article.")
-    parser.add_argument("source", nargs="?", default="1AquaMarketPhotos", help="Source folder with article photo directories.")
+    parser.add_argument("source", nargs="?", default="1AquaMarketPhotos", help="Source folder or .zip archive with article photo directories.")
     parser.add_argument(
         "--output-dir",
         default="public/images/products/articles",
@@ -143,6 +199,16 @@ def main() -> None:
         "--manifest-path",
         default="data/product-media.generated.json",
         help="Where to save the generated photo manifest JSON.",
+    )
+    parser.add_argument(
+        "--base-url",
+        default="/images/products/articles",
+        help="Public base URL for generated photo links.",
+    )
+    parser.add_argument(
+        "--source-display-name",
+        default=None,
+        help="Friendly source file name stored in manifest metadata.",
     )
     args = parser.parse_args()
 
@@ -159,10 +225,22 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
 
-    manifest = build_manifest(source_dir=source_dir, output_dir=output_dir)
+    resolved_source_dir, temp_dir = with_source_directory(source_dir)
+
+    try:
+        manifest = build_manifest(
+            source_dir=resolved_source_dir,
+            output_dir=output_dir,
+            base_url=args.base_url,
+            source_display_name=args.source_display_name or source_dir.name,
+        )
+    finally:
+        if temp_dir is not None:
+            temp_dir.cleanup()
+
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    print(f"Imported {sum(len(paths) for paths in manifest['articles'].values())} photos for {len(manifest['articles'])} articles.")
+    print(f"Imported {manifest['meta']['photoCount']} photos for {manifest['meta']['articleCount']} articles.")
     print(f"Manifest saved to {manifest_path}")
 
 

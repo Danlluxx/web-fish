@@ -24,12 +24,15 @@
 - Отправка Excel-файла заказа на почту менеджера, если настроен SMTP.
 - SEO-маршруты, `sitemap`, `robots`.
 - Отдельный Excel-прайс, который скачивается через `GET /api/price-list`.
+- Админ-загрузка архива фотографий через `/admin/photos` без пересборки сайта.
 - API:
   - `GET /api/price-list`
   - `GET /api/products`
   - `GET /api/products/[slug]`
   - `GET /api/search`
   - `GET /api/product-image/[slug]`
+  - `GET /api/product-media/[...segments]`
+  - `GET /api/product-media/article/[article]`
   - `POST /api/orders`
 
 ## Архитектура
@@ -54,6 +57,14 @@
   - актуальный Excel-прайс на сервере;
   - скачивается на сайте через `GET /api/price-list`.
 
+- `storage/current-product-media.generated.json`
+  - runtime-манифест фотографий товаров;
+  - обновляется через `/admin/photos` без конфликтов с Git.
+
+- `storage/product-images/articles/*`
+  - актуальные фотографии товаров, привязанные по артикулам;
+  - отдаются сайту через `GET /api/product-media/*`.
+
 - `lib/catalog/repository.ts`
   - интерфейс репозитория и in-memory реализация;
   - позволяет позже заменить источник данных на БД без переписывания UI.
@@ -76,6 +87,7 @@
   - для будущей клиентской автоподсказки;
   - для подключения админки или импорта.
 - Админ-загрузка прайса через `/admin/price-list` без пересборки сайта.
+- Админ-загрузка архива с фото через `/admin/photos` без пересборки сайта.
 
 ## Импорт нового Excel локально
 
@@ -104,6 +116,27 @@ npm run import:catalog -- "/полный/путь/до/файла.xlsx"
 После этого каталог и текущий прайс обновятся сразу.
 
 Runtime-обновления при этом пишутся в `storage/`, а не в Git-отслеживаемые файлы, поэтому последующие `git pull` больше не должны конфликтовать с текущим прайсом.
+
+## Обновление фотографий на сервере
+
+Для обновления фотографий без `build` и без `pm2 restart` используйте страницу:
+
+- `/admin/photos`
+
+Нужно:
+
+1. открыть страницу администратора
+2. ввести `ADMIN_PHOTO_IMPORT_TOKEN`
+   если он не задан, используется `ADMIN_PRICE_IMPORT_TOKEN`
+3. выбрать `.zip` архив с папками артикулов внутри
+4. загрузить архив
+
+После этого сервер:
+
+- сохранит архив в `storage/photo-archives`
+- обновит `storage/current-product-media.generated.json`
+- обновит `storage/product-images/articles/*`
+- сразу покажет новые фотографии в карточках товаров
 
 ## Запуск
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { buildCatalogPath, buildProductPath } from "@/lib/catalog/urls";
-import { getProductMedia } from "@/lib/catalog/media";
+import { getProductMedia } from "@/lib/catalog/media-server";
 import { siteConfig } from "@/lib/site";
 import type { Product } from "@/types/catalog";
 
@@ -56,8 +56,8 @@ const MENU_ITEMS: MenuItem[] = [
   }
 ];
 
-export function MenuShowcase({ showcaseProduct }: MenuShowcaseProps) {
-  const media = getProductMedia(showcaseProduct);
+export async function MenuShowcase({ showcaseProduct }: MenuShowcaseProps) {
+  const media = await getProductMedia(showcaseProduct);
   const primaryMedia = media[0];
   const secondaryMedia = media[1];
 
