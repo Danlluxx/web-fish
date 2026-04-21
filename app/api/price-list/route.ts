@@ -26,16 +26,27 @@ function buildDownloadName(sourceFileName: string | undefined) {
   return name.toLowerCase().endsWith(".xlsx") ? name : `${name}.xlsx`;
 }
 
+function buildAsciiFallbackFilename(fileName: string) {
+  const normalized = fileName
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/["\\]/g, "")
+    .trim();
+
+  return normalized || "current-price.xlsx";
+}
+
 export async function GET() {
   try {
     const [filePath, meta] = await Promise.all([resolvePricePath(), getRuntimeCatalogMeta()]);
     const file = await readFile(filePath);
     const downloadName = buildDownloadName(meta.sourceFileName);
+    const fallbackName = buildAsciiFallbackFilename(downloadName);
 
     return new NextResponse(file, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(downloadName)}`,
+        "Content-Disposition": `attachment; filename="${fallbackName}"; filename*=UTF-8''${encodeURIComponent(downloadName)}`,
         "Cache-Control": "no-store"
       }
     });
