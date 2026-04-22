@@ -5,6 +5,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from datetime import datetime
@@ -15,6 +16,8 @@ from zoneinfo import ZoneInfo
 
 ARTICLE_PATTERN = re.compile(r"[\[(]([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})[\])]\s*$")
 DIRECT_ARTICLE_PATTERN = re.compile(r"^[A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,}$")
+HEIC_EXTENSIONS = {".heic", ".heif"}
+SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", *HEIC_EXTENSIONS}
 CYRILLIC_TO_LATIN = {
     "А": "a",
     "Б": "b",
@@ -52,6 +55,15 @@ CYRILLIC_TO_LATIN = {
 }
 
 
+def repair_mojibake(value: str) -> str:
+    try:
+        repaired = value.encode("cp437").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return value
+
+    return repaired
+
+
 def normalize_spaces(value: str) -> str:
     return " ".join(value.split())
 
@@ -61,12 +73,13 @@ def normalize_article(value: str) -> str:
 
 
 def extract_article(value: str) -> str | None:
-    cleaned = normalize_spaces(value).strip()
+    repaired_value = repair_mojibake(value)
+    cleaned = normalize_spaces(repaired_value).strip()
 
     if DIRECT_ARTICLE_PATTERN.fullmatch(cleaned):
         return normalize_article(cleaned)
 
-    match = ARTICLE_PATTERN.search(value)
+    match = ARTICLE_PATTERN.search(repaired_value)
 
     if not match:
         return None
@@ -110,8 +123,54 @@ def natural_sort_key(path: Path) -> list[tuple[int, int | str]]:
 
 def iter_image_files(folder: Path) -> Iterable[Path]:
     return sorted(
-        (item for item in folder.iterdir() if item.is_file() and item.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}),
+        (
+            item
+            for item in folder.iterdir()
+            if item.is_file() and item.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
+        ),
         key=natural_sort_key,
+    )
+
+
+def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
+    if shutil.which("sips"):
+        subprocess.run(
+            ["sips", "-s", "format", "jpeg", str(source), "--out", str(destination)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    if shutil.which("magick"):
+        subprocess.run(
+            ["magick", str(source), str(destination)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    if shutil.which("convert"):
+        subprocess.run(
+            ["convert", str(source), str(destination)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    if shutil.which("ffmpeg"):
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", str(source), str(destination)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    raise RuntimeError(
+        f"Photo {source.name} is in HEIC/HEIF, but no converter was found (sips, magick, convert, ffmpeg)."
     )
 
 
@@ -153,8 +212,17 @@ def build_manifest(
 
         for index, file_path in enumerate(files, start=1):
             extension = file_path.suffix.lower() or ".png"
+
+            if extension in HEIC_EXTENSIONS:
+                extension = ".jpg"
+
             output_file = article_output_dir / f"{index}{extension}"
-            shutil.copy2(file_path, output_file)
+
+            if file_path.suffix.lower() in HEIC_EXTENSIONS:
+                convert_heic_to_jpeg(file_path, output_file)
+            else:
+                shutil.copy2(file_path, output_file)
+
             urls.append(f"{normalized_base_url}/{article_slug}/{index}{extension}")
 
         articles[article] = urls

@@ -1,18 +1,10 @@
 import { PhotoImportForm } from "@/components/admin/photo-import-form";
-import { getRuntimeProductMediaMeta } from "@/lib/catalog/media-data";
+import { getPhotoImportDashboard } from "@/lib/catalog/import-product-photos";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPhotosPage() {
-  const meta = await getRuntimeProductMediaMeta();
+  const dashboard = await getPhotoImportDashboard();
 
-  return (
-    <PhotoImportForm
-      currentSourceFileName={meta.sourceFileName}
-      importedAt={meta.importedAt}
-      articleCount={meta.articleCount}
-      photoCount={meta.photoCount}
-    />
-  );
+  return <PhotoImportForm {...dashboard} />;
 }
-

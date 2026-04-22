@@ -1,9 +1,17 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { execFile } from "node:child_process";
 
 import { getRuntimeProductMediaMeta } from "@/lib/catalog/media-data";
+import {
+  buildPhotoImportLog,
+  findLatestPhotoImportEntryByArchive,
+  finishPhotoImportAttemptFailure,
+  finishPhotoImportAttemptSuccess,
+  getPhotoImportDashboard,
+  startPhotoImportAttempt
+} from "@/lib/catalog/photo-import-state";
 
 const execFileAsync = promisify(execFile);
 
@@ -18,9 +26,81 @@ function sanitizeFilename(value: string): string {
 
 export interface ImportedPhotoArchiveResult {
   sourceFileName: string;
+  storedArchiveName: string;
   importedAt: string;
   articleCount: number;
   photoCount: number;
+}
+
+function sanitizeStoredArchiveName(value: string) {
+  return path.basename(value);
+}
+
+async function importProductPhotosFromStoredArchive(
+  storedArchiveName: string,
+  sourceFileName: string
+): Promise<ImportedPhotoArchiveResult> {
+  const safeStoredArchiveName = sanitizeStoredArchiveName(storedArchiveName);
+  const storedArchivePath = path.join(PHOTO_ARCHIVES_DIR, safeStoredArchiveName);
+
+  await access(storedArchivePath);
+
+  const attempt = await startPhotoImportAttempt(sourceFileName, safeStoredArchiveName);
+
+  try {
+    const { stdout, stderr } = await execFileAsync("python3", [
+      path.join(process.cwd(), "scripts", "import_product_photos.py"),
+      storedArchivePath,
+      "--source-display-name",
+      sourceFileName,
+      "--output-dir",
+      CURRENT_PHOTO_OUTPUT_DIR,
+      "--manifest-path",
+      CURRENT_PHOTO_MANIFEST_PATH,
+      "--base-url",
+      "/api/product-media/articles"
+    ]);
+    const meta = await getRuntimeProductMediaMeta();
+    const log = buildPhotoImportLog(stdout, stderr);
+
+    await finishPhotoImportAttemptSuccess(attempt.id, {
+      sourceFileName: meta.sourceFileName,
+      storedArchiveName: safeStoredArchiveName,
+      importedAt: meta.importedAt,
+      articleCount: meta.articleCount,
+      photoCount: meta.photoCount,
+      log
+    });
+
+    return {
+      sourceFileName: meta.sourceFileName,
+      storedArchiveName: safeStoredArchiveName,
+      importedAt: meta.importedAt,
+      articleCount: meta.articleCount,
+      photoCount: meta.photoCount
+    };
+  } catch (error) {
+    const stdout =
+      typeof error === "object" && error && "stdout" in error
+        ? String((error as { stdout?: unknown }).stdout ?? "")
+        : "";
+    const stderr =
+      typeof error === "object" && error && "stderr" in error
+        ? String((error as { stderr?: unknown }).stderr ?? "")
+        : "";
+    const message = error instanceof Error ? error.message : "Неизвестная ошибка импорта.";
+    const log = buildPhotoImportLog(stdout, stderr, message);
+
+    await finishPhotoImportAttemptFailure(attempt.id, {
+      sourceFileName,
+      storedArchiveName: safeStoredArchiveName,
+      finishedAt: new Date().toISOString(),
+      error: message,
+      log
+    });
+
+    throw new Error(message);
+  }
 }
 
 export async function importProductPhotosFromBuffer(
@@ -36,20 +116,17 @@ export async function importProductPhotosFromBuffer(
 
   await writeFile(storedArchivePath, content);
 
-  await execFileAsync("python3", [
-    path.join(process.cwd(), "scripts", "import_product_photos.py"),
-    storedArchivePath,
-    "--source-display-name",
-    fileName,
-    "--output-dir",
-    CURRENT_PHOTO_OUTPUT_DIR,
-    "--manifest-path",
-    CURRENT_PHOTO_MANIFEST_PATH,
-    "--base-url",
-    "/api/product-media/articles"
-  ]);
+  return importProductPhotosFromStoredArchive(datedName, fileName);
+}
 
-  return getRuntimeProductMediaMeta();
+export async function retryProductPhotosImport(
+  storedArchiveName: string
+): Promise<ImportedPhotoArchiveResult> {
+  const safeStoredArchiveName = sanitizeStoredArchiveName(storedArchiveName);
+  const existingEntry = await findLatestPhotoImportEntryByArchive(safeStoredArchiveName);
+  const sourceFileName = existingEntry?.sourceFileName ?? safeStoredArchiveName;
+
+  return importProductPhotosFromStoredArchive(safeStoredArchiveName, sourceFileName);
 }
 
 export function getAdminPhotoImportToken() {
@@ -60,3 +137,4 @@ export function getAdminPhotoImportToken() {
   );
 }
 
+export { getPhotoImportDashboard };
