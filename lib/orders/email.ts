@@ -48,10 +48,16 @@ function getOrderEmailConfig(): (SmtpClientConfig & { from: string; recipients: 
 }
 
 function buildOrderEmailText(order: StoredOrder): string {
+  const formattedDate = new Intl.DateTimeFormat("ru-RU", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/Moscow"
+  }).format(new Date(order.createdAt));
+
   return [
     `Новый заказ ${order.id}`,
     "",
-    `Дата: ${new Date(order.createdAt).toLocaleString("ru-RU")}`,
+    `Дата: ${formattedDate} МСК`,
     `ФИО: ${order.customer.fullName}`,
     `Телефон: ${order.customer.phone}`,
     `Адрес доставки: ${order.customer.deliveryAddress}`,
@@ -83,7 +89,7 @@ export async function deliverOrderEmail(order: StoredOrder): Promise<OrderEmailR
 
     return {
       status: "sent",
-      message: "Excel-файл заказа отправлен на почту."
+      message: "Ваш заказ передан менеджеру."
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Неизвестная ошибка отправки письма.";

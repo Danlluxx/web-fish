@@ -131,10 +131,13 @@ function createZip(entries: ZipEntry[]): Buffer {
 function formatOrderDate(value: string): string {
   const date = new Date(value);
 
-  return new Intl.DateTimeFormat("ru-RU", {
+  const formattedDate = new Intl.DateTimeFormat("ru-RU", {
     dateStyle: "medium",
-    timeStyle: "short"
+    timeStyle: "short",
+    timeZone: "Europe/Moscow"
   }).format(date);
+
+  return `${formattedDate} МСК`;
 }
 
 function getWorksheetName(orderId: string): string {

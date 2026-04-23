@@ -135,7 +135,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
       setSubmittedNotice(
         payload.emailMessage ??
           (payload.emailStatus === "sent"
-            ? "Excel-файл заказа отправлен на почту."
+            ? "Ваш заказ передан менеджеру."
             : "Заказ оформлен.")
       );
       setFullName("");

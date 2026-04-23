@@ -67,7 +67,7 @@ export function HeaderCategoriesNav({ priceListHref, sections }: HeaderCategorie
               aria-controls={`header-subcategories-${section.slug}`}
               onMouseEnter={() => setOpenSlug(section.slug)}
               onFocus={() => setOpenSlug(section.slug)}
-              onClick={() => setOpenSlug((current) => (current === section.slug ? null : section.slug))}
+              onClick={() => setOpenSlug(section.slug)}
             >
               <span>{section.title}</span>
               <small aria-hidden="true">▾</small>

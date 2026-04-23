@@ -2,20 +2,10 @@
 
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
-const HERO_SLIDES = [
-  {
-    src: "/images/home/hero-fish-1.jpg",
-    alt: "Аквариумные рыбы в витрине, оранжевые особи"
-  },
-  {
-    src: "/images/home/hero-fish-2.jpg",
-    alt: "Стайка полосатых аквариумных рыб"
-  },
-  {
-    src: "/images/home/hero-fish-3.jpg",
-    alt: "Золотые рыбки в аквариуме"
-  }
-];
+const HERO_SLIDES = Array.from({ length: 14 }, (_, index) => ({
+  src: `/images/home/hero-fish-${index + 1}.jpg`,
+  alt: `Аквариумные рыбы и растения, фото ${index + 1}`
+}));
 
 export function HomeHeroGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
