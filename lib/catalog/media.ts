@@ -7,6 +7,7 @@ export interface ProductMedia {
 
 export const SHOWCASE_PRODUCT_SLUG = "ryby-labirintovye-terneciya-glofish-zolotaya-2-2-5-sm";
 const PRODUCT_MEDIA_CACHE_VERSION = "20260423";
+const TITLE_ARTICLE_PATTERN = /[\[(]([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})[\])]\s*$/;
 
 export const MANUAL_PRODUCT_MEDIA_MAP: Record<string, ProductMedia[]> = {
   [SHOWCASE_PRODUCT_SLUG]: [
@@ -27,6 +28,17 @@ export function normalizeArticle(article: string | null | undefined): string | n
   }
 
   return article.replace(/\s+/g, "").toUpperCase();
+}
+
+export function resolveProductArticle(product: Pick<Product, "title" | "article">): string | null {
+  const explicitArticle = normalizeArticle(product.article);
+
+  if (explicitArticle) {
+    return explicitArticle;
+  }
+
+  const titleArticle = product.title.match(TITLE_ARTICLE_PATTERN)?.[1];
+  return normalizeArticle(titleArticle);
 }
 
 export function buildMediaItems(sources: string[], title: string): ProductMedia[] {
@@ -50,7 +62,7 @@ export function getPrimaryProductMedia(product: Pick<Product, "slug" | "title" |
     return manualMedia;
   }
 
-  const normalizedArticle = normalizeArticle(product.article);
+  const normalizedArticle = resolveProductArticle(product);
 
   if (normalizedArticle) {
     return buildArticlePrimaryMedia(normalizedArticle, product.title);

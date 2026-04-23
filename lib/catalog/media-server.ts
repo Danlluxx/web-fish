@@ -5,7 +5,7 @@ import {
   MANUAL_PRODUCT_MEDIA_MAP,
   buildMediaItems,
   type ProductMedia,
-  normalizeArticle
+  resolveProductArticle
 } from "@/lib/catalog/media";
 import { getRuntimeProductMediaByArticle } from "@/lib/catalog/media-data";
 
@@ -18,7 +18,7 @@ export async function getMappedProductMedia(
     return manualMedia;
   }
 
-  const normalizedArticle = normalizeArticle(product.article);
+  const normalizedArticle = resolveProductArticle(product);
 
   if (!normalizedArticle) {
     return null;
@@ -53,4 +53,3 @@ export async function getPrimaryMappedProductMedia(
 ): Promise<ProductMedia | null> {
   return (await getMappedProductMedia(product))?.[0] ?? null;
 }
-
