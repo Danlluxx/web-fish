@@ -5,7 +5,7 @@ interface RouteContext {
   params: Promise<{ slug: string }>;
 }
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(_request: Request, context: RouteContext) {
   const { slug } = await context.params;
   const product = await getProductBySlug(slug);
 
@@ -16,7 +16,12 @@ export async function GET(request: Request, context: RouteContext) {
   const realImage = await getPrimaryMappedProductMedia(product);
 
   if (realImage) {
-    return Response.redirect(new URL(realImage.src, request.url), 307);
+    return new Response(null, {
+      status: 307,
+      headers: {
+        Location: realImage.src
+      }
+    });
   }
 
   const svg = `

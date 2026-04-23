@@ -30,12 +30,17 @@ function buildFallbackSvg(article: string) {
   `.trim();
 }
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(_request: Request, context: RouteContext) {
   const { article } = await context.params;
   const media = await getRuntimeProductMediaByArticle(article);
 
   if (media?.[0]) {
-    return Response.redirect(new URL(media[0], request.url), 307);
+    return new Response(null, {
+      status: 307,
+      headers: {
+        Location: media[0]
+      }
+    });
   }
 
   return new Response(buildFallbackSvg(article), {
@@ -45,4 +50,3 @@ export async function GET(request: Request, context: RouteContext) {
     }
   });
 }
-
