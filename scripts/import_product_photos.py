@@ -133,6 +133,17 @@ def iter_image_files(folder: Path) -> Iterable[Path]:
 
 
 def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
+    node_helper = Path(__file__).with_name("convert_heic_to_jpeg.cjs")
+
+    if shutil.which("node") and node_helper.exists():
+        subprocess.run(
+            ["node", str(node_helper), str(source), str(destination)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
     if shutil.which("sips"):
         subprocess.run(
             ["sips", "-s", "format", "jpeg", str(source), "--out", str(destination)],
