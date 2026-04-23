@@ -47,7 +47,7 @@ export async function GET(_request: Request, context: RouteContext) {
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=86400, s-maxage=86400"
+      "Cache-Control": "no-store"
     }
   });
 }

@@ -6,6 +6,7 @@ export interface ProductMedia {
 }
 
 export const SHOWCASE_PRODUCT_SLUG = "ryby-labirintovye-terneciya-glofish-zolotaya-2-2-5-sm";
+const PRODUCT_MEDIA_CACHE_VERSION = "20260423";
 
 export const MANUAL_PRODUCT_MEDIA_MAP: Record<string, ProductMedia[]> = {
   [SHOWCASE_PRODUCT_SLUG]: [
@@ -37,7 +38,7 @@ export function buildMediaItems(sources: string[], title: string): ProductMedia[
 
 function buildArticlePrimaryMedia(article: string, title: string): ProductMedia {
   return {
-    src: `/api/product-media/article/${encodeURIComponent(article)}`,
+    src: `/api/product-media/article/${encodeURIComponent(article)}?v=${PRODUCT_MEDIA_CACHE_VERSION}`,
     alt: title
   };
 }

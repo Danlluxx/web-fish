@@ -46,7 +46,7 @@ export async function GET(_request: Request, context: RouteContext) {
   return new Response(buildFallbackSvg(article), {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=3600, s-maxage=3600"
+      "Cache-Control": "no-store"
     }
   });
 }
