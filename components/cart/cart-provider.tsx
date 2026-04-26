@@ -19,6 +19,7 @@ interface CartContextValue {
   isInCart: (slug: string) => boolean;
   addItem: (slug: string, quantity?: number) => void;
   setQuantity: (slug: string, quantity: number) => void;
+  replaceItems: (items: CartItemState[]) => void;
   removeItem: (slug: string) => void;
   clearCart: () => void;
 }
@@ -135,6 +136,9 @@ export function CartProvider({
             item.slug === slug ? { ...item, quantity: normalizedQuantity } : item
           );
         });
+      },
+      replaceItems: (nextItems) => {
+        setItems(sanitizeCartItems(nextItems, validSlugSet));
       },
       removeItem: (slug) => {
         setItems((current) => current.filter((item) => item.slug !== slug));

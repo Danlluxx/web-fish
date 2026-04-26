@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
+import { readLastOrderSnapshot, writeLastOrderSnapshot, type LastOrderSnapshot } from "@/lib/cart/last-order";
 import { getPrimaryProductMedia } from "@/lib/catalog/media";
 import { formatPrice, rubleFormatter } from "@/lib/price";
 import { buildCatalogPath, buildProductPath } from "@/lib/catalog/urls";
@@ -55,14 +56,38 @@ function formatPhoneInput(value: string): string {
   return formatted;
 }
 
+function formatLastOrderDate(value: string): string {
+  try {
+    return new Intl.DateTimeFormat("ru-RU", {
+      day: "2-digit",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date(value));
+  } catch {
+    return "";
+  }
+}
+
 export function CartPageClient({ products }: CartPageClientProps) {
-  const { items, totalQuantity, uniqueItemsCount, hasHydrated, setQuantity, removeItem, clearCart } = useCart();
+  const {
+    items,
+    totalQuantity,
+    uniqueItemsCount,
+    hasHydrated,
+    setQuantity,
+    replaceItems,
+    removeItem,
+    clearCart
+  } = useCart();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submittedOrderId, setSubmittedOrderId] = useState("");
   const [submittedNotice, setSubmittedNotice] = useState("");
+  const [lastOrder, setLastOrder] = useState<LastOrderSnapshot | null>(null);
+  const [restoreNotice, setRestoreNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cartProducts = useMemo(() => {
@@ -86,6 +111,38 @@ export function CartPageClient({ products }: CartPageClientProps) {
     () => cartProducts.filter(({ product }) => product.price == null).length,
     [cartProducts]
   );
+
+  const lastOrderSummary = useMemo(() => {
+    if (!lastOrder) {
+      return null;
+    }
+
+    return {
+      uniqueItemsCount: lastOrder.items.length,
+      totalQuantity: lastOrder.items.reduce((sum, item) => sum + item.quantity, 0),
+      savedAtLabel: formatLastOrderDate(lastOrder.savedAt)
+    };
+  }, [lastOrder]);
+
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
+    setLastOrder(readLastOrderSnapshot());
+  }, [hasHydrated]);
+
+  function handleRepeatLastOrder() {
+    if (!lastOrder || lastOrder.items.length === 0) {
+      return;
+    }
+
+    replaceItems(lastOrder.items);
+    setSubmittedOrderId("");
+    setSubmittedNotice("");
+    setSubmitError("");
+    setRestoreNotice("Последний заказ снова добавлен в корзину. Проверьте количества перед отправкой.");
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -130,7 +187,19 @@ export function CartPageClient({ products }: CartPageClientProps) {
         return;
       }
 
+      const nextLastOrder: LastOrderSnapshot = {
+        orderId: payload.orderId,
+        savedAt: new Date().toISOString(),
+        items: cartProducts.map(({ product, quantity }) => ({
+          slug: product.slug,
+          quantity
+        }))
+      };
+
+      writeLastOrderSnapshot(nextLastOrder);
+      setLastOrder(nextLastOrder);
       clearCart();
+      setRestoreNotice("");
       setSubmittedOrderId(payload.orderId);
       setSubmittedNotice(
         payload.emailMessage ??
@@ -159,6 +228,24 @@ export function CartPageClient({ products }: CartPageClientProps) {
     );
   }
 
+  const lastOrderPanel =
+    lastOrder && lastOrderSummary ? (
+      <div className="last-order-panel">
+        <div className="last-order-panel__copy">
+          <span className="eyebrow">Последний заказ</span>
+          <h3>{lastOrder.orderId}</h3>
+          <p>
+            Сохранён в этом браузере{lastOrderSummary.savedAtLabel ? `: ${lastOrderSummary.savedAtLabel}` : ""}.
+            Восстановим {lastOrderSummary.uniqueItemsCount} поз. / {lastOrderSummary.totalQuantity} шт.
+          </p>
+        </div>
+
+        <button type="button" className="button button--secondary" onClick={handleRepeatLastOrder}>
+          Повторить заказ
+        </button>
+      </div>
+    ) : null;
+
   if (submittedOrderId) {
     return (
       <div className="catalog-layout">
@@ -172,6 +259,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 вернуться к каталогу и продолжить подбор товаров.
               </p>
               {submittedNotice ? <p className="submission-note">{submittedNotice}</p> : null}
+              {lastOrderPanel}
             </div>
           </div>
           <div className="hero-panel__actions">
@@ -205,6 +293,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
               Добавляйте товары в корзину, указывайте количество и отправляйте заявку с данными
               получателя.
             </p>
+            {restoreNotice ? <p className="submission-note">{restoreNotice}</p> : null}
           </div>
 
           <div className="catalog-hero__stats">
@@ -371,6 +460,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
         <section className="empty-state empty-state--standalone">
           <h2>Корзина пока пустая</h2>
           <p>Добавьте товары из каталога, чтобы указать количество и оформить заказ.</p>
+          {lastOrderPanel}
           <Link href={buildCatalogPath("ryby")} className="button button--primary">
             Перейти к товарам
           </Link>
