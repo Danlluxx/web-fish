@@ -16,6 +16,7 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
   const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef(0);
   const pointerIdRef = useRef<number | null>(null);
+  const hasMultiplePhotos = media.length > 1;
 
   const activeMedia = media[activeIndex] ?? media[0];
 
@@ -41,15 +42,19 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
   }
 
   function goToPrev() {
-    goToIndex(activeIndex - 1);
+    setActiveIndex((current) => (current - 1 + media.length) % media.length);
   }
 
   function goToNext() {
-    goToIndex(activeIndex + 1);
+    setActiveIndex((current) => (current + 1) % media.length);
   }
 
   function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    if ((event.target as HTMLElement | null)?.closest(".product-lightbox__nav")) {
       return;
     }
 
@@ -130,10 +135,10 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
           onClick={() => openAt(0)}
           aria-label={`Открыть фото товара ${productTitle}`}
         >
-          <img src={media[0].src} alt={media[0].alt} className="product-visual__image" />
+          <img src={media[0].src} alt={media[0].alt} className="product-visual__image" draggable={false} />
         </button>
 
-        {media.length > 1 ? (
+        {hasMultiplePhotos ? (
           <div className="product-visual__gallery">
             {media.slice(1).map((item, index) => (
               <button
@@ -143,7 +148,7 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
                 onClick={() => openAt(index + 1)}
                 aria-label={`Открыть ${item.alt}`}
               >
-                <img src={item.src} alt={item.alt} className="product-visual__thumb" />
+                <img src={item.src} alt={item.alt} className="product-visual__thumb" draggable={false} />
               </button>
             ))}
           </div>
@@ -175,14 +180,18 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
                   alt={activeMedia.alt}
                   className="product-lightbox__image"
                   style={{ transform: `translateX(${dragOffset}px)` }}
+                  draggable={false}
                 />
 
-                {media.length > 1 ? (
+                {hasMultiplePhotos ? (
                   <>
                     <button
                       type="button"
                       className="product-lightbox__nav product-lightbox__nav--prev"
-                      onClick={goToPrev}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        goToPrev();
+                      }}
                       aria-label="Предыдущее фото"
                     >
                       ‹
@@ -190,7 +199,10 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
                     <button
                       type="button"
                       className="product-lightbox__nav product-lightbox__nav--next"
-                      onClick={goToNext}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        goToNext();
+                      }}
                       aria-label="Следующее фото"
                     >
                       ›
@@ -198,22 +210,6 @@ export function ProductMediaLightbox({ media, productTitle }: ProductMediaLightb
                   </>
                 ) : null}
               </div>
-
-              {media.length > 1 ? (
-                <div className="product-lightbox__thumbs" aria-label="Все фотографии товара">
-                  {media.map((item, index) => (
-                    <button
-                      key={item.src}
-                      type="button"
-                      className={`product-lightbox__thumb ${index === activeIndex ? "is-active" : ""}`}
-                      onClick={() => goToIndex(index)}
-                      aria-label={`Показать фото ${index + 1}`}
-                    >
-                      <img src={item.src} alt={item.alt} className="product-lightbox__thumb-image" />
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </div>
         </div>
