@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
+import { ProductMediaLightbox } from "@/components/catalog/product-media-lightbox";
 import { ProductCard } from "@/components/catalog/product-card";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button";
@@ -18,8 +19,6 @@ interface ProductDetailProps {
 export async function ProductDetail({ product, similarProducts }: ProductDetailProps) {
   const detailTags = Array.from(new Set(product.tags.concat(product.keywords.slice(0, 2))));
   const media = await getProductMedia(product);
-  const primaryMedia = media[0];
-  const galleryMedia = media.slice(1);
 
   return (
     <div className="product-detail-layout">
@@ -41,33 +40,7 @@ export async function ProductDetail({ product, similarProducts }: ProductDetailP
         />
 
         <div className="product-detail__grid">
-          <div className="product-visual">
-            <a
-              href={primaryMedia.src}
-              target="_blank"
-              rel="noreferrer"
-              className="product-visual__image-link"
-              aria-label="Открыть основное фото товара"
-            >
-              <img src={primaryMedia.src} alt={primaryMedia.alt} className="product-visual__image" />
-            </a>
-            {galleryMedia.length > 0 ? (
-              <div className="product-visual__gallery">
-                {galleryMedia.map((item) => (
-                  <a
-                    key={item.src}
-                    href={item.src}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="product-visual__thumb-link"
-                    aria-label={`Открыть ${item.alt}`}
-                  >
-                    <img src={item.src} alt={item.alt} className="product-visual__thumb" />
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <ProductMediaLightbox media={media} productTitle={product.title} />
 
           <div className="product-summary-card">
             <span className="eyebrow">Карточка товара</span>
