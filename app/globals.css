@@ -122,7 +122,8 @@ input {
   color: var(--accent-strong);
 }
 
-.site-header__telegram {
+.site-header__telegram,
+.site-header__max {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -134,7 +135,8 @@ input {
   text-underline-offset: 3px;
 }
 
-.site-header__telegram:hover {
+.site-header__telegram:hover,
+.site-header__max:hover {
   color: var(--accent-strong);
 }
 
@@ -1881,10 +1883,17 @@ p {
   padding: 0;
 }
 
+.product-visual__image-link {
+  display: block;
+  overflow: hidden;
+}
+
 .product-visual__image {
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  transition: transform 0.2s ease;
 }
 
 .product-visual__gallery {
@@ -1896,11 +1905,32 @@ p {
   background: var(--bg-soft);
 }
 
+.product-visual__thumb-link {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
 .product-visual__thumb {
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-md);
   object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.product-visual__image-link:hover .product-visual__image,
+.product-visual__image-link:focus-visible .product-visual__image,
+.product-visual__thumb-link:hover .product-visual__thumb,
+.product-visual__thumb-link:focus-visible .product-visual__thumb {
+  transform: scale(1.02);
+}
+
+.product-visual__image-link:focus-visible,
+.product-visual__thumb-link:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: -2px;
 }
 
 .product-summary-card {
@@ -2475,11 +2505,12 @@ p {
     margin-left: auto;
   }
 
-  .site-header__phone,
-  .site-header__telegram {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
+.site-header__phone,
+.site-header__telegram,
+.site-header__max {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
     color: var(--accent);
     font-size: 0.94rem;
     font-weight: 600;
@@ -2488,10 +2519,11 @@ p {
     text-underline-offset: 3px;
   }
 
-  .site-header__phone:hover,
-  .site-header__telegram:hover {
-    color: var(--accent-strong);
-  }
+.site-header__phone:hover,
+.site-header__telegram:hover,
+.site-header__max:hover {
+  color: var(--accent-strong);
+}
 
   .site-nav__item {
     min-height: 52px;

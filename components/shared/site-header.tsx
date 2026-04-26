@@ -27,6 +27,9 @@ export async function SiteHeader() {
             <a href={siteConfig.telegramUrl} target="_blank" rel="noreferrer" className="site-header__telegram">
               Наш Телеграм
             </a>
+            <a href={siteConfig.maxUrl} target="_blank" rel="noreferrer" className="site-header__max">
+              {siteConfig.maxLabel}
+            </a>
           </div>
         </div>
       </div>

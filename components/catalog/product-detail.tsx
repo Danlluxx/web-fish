@@ -42,11 +42,28 @@ export async function ProductDetail({ product, similarProducts }: ProductDetailP
 
         <div className="product-detail__grid">
           <div className="product-visual">
-            <img src={primaryMedia.src} alt={primaryMedia.alt} className="product-visual__image" />
+            <a
+              href={primaryMedia.src}
+              target="_blank"
+              rel="noreferrer"
+              className="product-visual__image-link"
+              aria-label="Открыть основное фото товара"
+            >
+              <img src={primaryMedia.src} alt={primaryMedia.alt} className="product-visual__image" />
+            </a>
             {galleryMedia.length > 0 ? (
               <div className="product-visual__gallery">
                 {galleryMedia.map((item) => (
-                  <img key={item.src} src={item.src} alt={item.alt} className="product-visual__thumb" />
+                  <a
+                    key={item.src}
+                    href={item.src}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="product-visual__thumb-link"
+                    aria-label={`Открыть ${item.alt}`}
+                  >
+                    <img src={item.src} alt={item.alt} className="product-visual__thumb" />
+                  </a>
                 ))}
               </div>
             ) : null}
