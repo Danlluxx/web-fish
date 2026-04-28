@@ -9,6 +9,9 @@ import type { CatalogSection, Product } from "@/types/catalog";
 interface HomePageProps {
   sections: CatalogSection[];
   featuredProducts: Product[];
+  hasNewArrivals: boolean;
+  totalNewArrivals: number;
+  fallbackProductsHref: string;
   totalProducts: number;
   totalSubcategories: number;
 }
@@ -16,6 +19,9 @@ interface HomePageProps {
 export function HomePage({
   sections,
   featuredProducts,
+  hasNewArrivals,
+  totalNewArrivals,
+  fallbackProductsHref,
   totalProducts,
   totalSubcategories
 }: HomePageProps) {
@@ -94,19 +100,38 @@ export function HomePage({
       <section className="featured-products">
         <div className="section-header">
           <div>
-            <span className="eyebrow">Превью каталога</span>
-            <h2>Пример карточек товаров</h2>
+            <span className="eyebrow">Обновление прайса</span>
+            <h2>Новые поступления</h2>
           </div>
           <Link href="/catalog" className="section-link">
             Все товары
           </Link>
         </div>
 
-        <div className="product-grid">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {hasNewArrivals ? (
+          <div className="product-grid">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <h3>Новых позиций пока нет</h3>
+            <p>
+              После следующей загрузки прайса здесь автоматически появятся товары, которых не было
+              в предыдущей версии каталога.
+            </p>
+            <Link href={fallbackProductsHref} className="button button--secondary">
+              Все товары
+            </Link>
+          </div>
+        )}
+
+        {hasNewArrivals && totalNewArrivals > featuredProducts.length ? (
+          <p className="featured-products__note">
+            Показаны {featuredProducts.length} из {totalNewArrivals} новых позиций.
+          </p>
+        ) : null}
       </section>
     </div>
   );

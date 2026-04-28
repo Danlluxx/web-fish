@@ -8,7 +8,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "import:catalog": "python3 scripts/import_price_list.py",
-    "import:photos": "python3 scripts/import_product_photos.py"
+    "import:photos": "python3 scripts/import_product_photos.py",
+    "images:webp": "node scripts/convert_project_images_to_webp.cjs"
   },
   "dependencies": {
     "heic-convert": "^2.1.0",

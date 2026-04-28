@@ -38,7 +38,8 @@ export async function POST(request: Request) {
       ok: true,
       productCount: meta.productCount,
       sourceFileName: meta.sourceFileName,
-      importedAt: meta.importedAt
+      importedAt: meta.importedAt,
+      newArrivalCount: meta.newArrivalCount ?? 0
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Неизвестная ошибка импорта.";

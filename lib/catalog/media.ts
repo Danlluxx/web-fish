@@ -12,11 +12,11 @@ const TITLE_ARTICLE_PATTERN = /[\[(]([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})[\])]\
 export const MANUAL_PRODUCT_MEDIA_MAP: Record<string, ProductMedia[]> = {
   [SHOWCASE_PRODUCT_SLUG]: [
     {
-      src: "/images/products/terneciya-glofish-zolotaya-1.jpg",
+      src: "/images/products/terneciya-glofish-zolotaya-1.webp",
       alt: 'Тернеция "GloFish" золотая в аквариуме'
     },
     {
-      src: "/images/products/terneciya-glofish-zolotaya-2.jpg",
+      src: "/images/products/terneciya-glofish-zolotaya-2.webp",
       alt: 'Тернеция "GloFish" золотая, второй ракурс'
     }
   ]

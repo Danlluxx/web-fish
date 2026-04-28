@@ -132,8 +132,8 @@ def iter_image_files(folder: Path) -> Iterable[Path]:
     )
 
 
-def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
-    node_helper = Path(__file__).with_name("convert_heic_to_jpeg.cjs")
+def convert_image_to_webp(source: Path, destination: Path) -> None:
+    node_helper = Path(__file__).with_name("convert_image_to_webp.cjs")
 
     if shutil.which("node") and node_helper.exists():
         subprocess.run(
@@ -144,9 +144,9 @@ def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
         )
         return
 
-    if shutil.which("sips"):
+    if source.suffix.lower() not in HEIC_EXTENSIONS and shutil.which("cwebp"):
         subprocess.run(
-            ["sips", "-s", "format", "jpeg", str(source), "--out", str(destination)],
+            ["cwebp", "-quiet", "-q", "86", str(source), "-o", str(destination)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -155,7 +155,7 @@ def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
 
     if shutil.which("magick"):
         subprocess.run(
-            ["magick", str(source), str(destination)],
+            ["magick", str(source), "-quality", "86", str(destination)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -164,7 +164,7 @@ def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
 
     if shutil.which("convert"):
         subprocess.run(
-            ["convert", str(source), str(destination)],
+            ["convert", str(source), "-quality", "86", str(destination)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -173,7 +173,7 @@ def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
 
     if shutil.which("ffmpeg"):
         subprocess.run(
-            ["ffmpeg", "-y", "-i", str(source), str(destination)],
+            ["ffmpeg", "-y", "-i", str(source), "-qscale", "2", str(destination)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -181,7 +181,7 @@ def convert_heic_to_jpeg(source: Path, destination: Path) -> None:
         return
 
     raise RuntimeError(
-        f"Photo {source.name} is in HEIC/HEIF, but no converter was found (sips, magick, convert, ffmpeg)."
+        f"Photo {source.name} could not be converted to WebP. No converter was found (node+sharp, cwebp, magick, convert, ffmpeg)."
     )
 
 
@@ -222,19 +222,14 @@ def build_manifest(
         urls: list[str] = []
 
         for index, file_path in enumerate(files, start=1):
-            extension = file_path.suffix.lower() or ".png"
+            output_file = article_output_dir / f"{index}.webp"
 
-            if extension in HEIC_EXTENSIONS:
-                extension = ".jpg"
-
-            output_file = article_output_dir / f"{index}{extension}"
-
-            if file_path.suffix.lower() in HEIC_EXTENSIONS:
-                convert_heic_to_jpeg(file_path, output_file)
-            else:
+            if file_path.suffix.lower() == ".webp":
                 shutil.copy2(file_path, output_file)
+            else:
+                convert_image_to_webp(file_path, output_file)
 
-            urls.append(f"{normalized_base_url}/{article_slug}/{index}{extension}")
+            urls.append(f"{normalized_base_url}/{article_slug}/{index}.webp")
 
         articles[article] = urls
 

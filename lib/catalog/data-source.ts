@@ -3,13 +3,19 @@ import path from "node:path";
 
 import type { CatalogSection, Product } from "@/types/catalog";
 
+export interface CatalogMeta {
+  catalogTitle: string;
+  sourceFileName: string;
+  importedAt: string;
+  productCount: number;
+  previousSourceFileName?: string;
+  previousImportedAt?: string;
+  newArrivalCount?: number;
+  newArrivalSlugs?: string[];
+}
+
 interface GeneratedCatalog {
-  meta: {
-    catalogTitle: string;
-    sourceFileName: string;
-    importedAt: string;
-    productCount: number;
-  };
+  meta: CatalogMeta;
   sections: Array<{
     title: string;
     slug: string;
@@ -24,7 +30,7 @@ interface GeneratedCatalog {
 }
 
 interface RuntimeCatalog {
-  meta: GeneratedCatalog["meta"];
+  meta: CatalogMeta;
   sections: CatalogSection[];
   products: Product[];
 }

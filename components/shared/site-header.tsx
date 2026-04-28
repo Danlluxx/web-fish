@@ -39,7 +39,7 @@ export async function SiteHeader() {
           <div className="brand brand--logo">
             <Link href="/" aria-label={`${siteConfig.name} — главная`}>
               <Image
-                src="/images/branding/vs-o-rybkah-logo.jpg"
+                src="/images/branding/vs-o-rybkah-logo.webp"
                 alt={siteConfig.name}
                 width={440}
                 height={294}

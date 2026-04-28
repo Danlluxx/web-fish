@@ -3,7 +3,7 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 const HERO_SLIDES = Array.from({ length: 14 }, (_, index) => ({
-  src: `/images/home/hero-fish-${index + 1}.jpg`,
+  src: `/images/home/hero-fish-${index + 1}.webp`,
   alt: `Аквариумные рыбы и растения, фото ${index + 1}`
 }));
 

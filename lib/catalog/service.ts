@@ -1,4 +1,4 @@
-import { getRuntimeCatalogSections } from "@/lib/catalog/data-source";
+import { getRuntimeCatalog, getRuntimeCatalogSections } from "@/lib/catalog/data-source";
 import { productRepository } from "@/lib/catalog/repository";
 import { clamp, normalizeText } from "@/lib/catalog/utils";
 import type {
@@ -173,6 +173,26 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 export async function getAllProducts(): Promise<Product[]> {
   return productRepository.getAll();
+}
+
+export async function getNewArrivalProducts(limit = 8): Promise<{
+  items: Product[];
+  total: number;
+}> {
+  const catalog = await getRuntimeCatalog();
+  const allProducts = catalog.products;
+  const productMap = new Map(allProducts.map((product) => [product.slug, product]));
+  const slugs = catalog.meta.newArrivalSlugs ?? [];
+
+  const items = slugs
+    .map((slug) => productMap.get(slug))
+    .filter((product): product is Product => Boolean(product))
+    .slice(0, limit);
+
+  return {
+    items,
+    total: catalog.meta.newArrivalCount ?? items.length
+  };
 }
 
 export async function getSimilarProducts(product: Product, limit = 4): Promise<Product[]> {

@@ -1,6 +1,13 @@
 import { randomUUID } from "node:crypto";
 
 import { getAllProducts } from "@/lib/catalog/service";
+import {
+  buildOrderFingerprint,
+  consumeOrderAttempt,
+  getClientIp,
+  hasRecentDuplicateOrder,
+  rememberSubmittedOrder
+} from "@/lib/orders/anti-abuse";
 import { deliverOrderEmail } from "@/lib/orders/email";
 import { appendOrder } from "@/lib/orders/store";
 import type { CheckoutCustomer, CheckoutRequestItem, StoredOrder, StoredOrderItem } from "@/types/order";
@@ -10,6 +17,14 @@ export const runtime = "nodejs";
 interface OrderRequestPayload {
   customer?: CheckoutCustomer;
   items?: CheckoutRequestItem[];
+}
+
+function withRetryAfterHeaders(retryAfterSeconds: number) {
+  return {
+    headers: {
+      "Retry-After": String(retryAfterSeconds)
+    }
+  };
 }
 
 function normalizeText(value: string | undefined): string {
@@ -61,7 +76,32 @@ function validateItems(items?: CheckoutRequestItem[]): CheckoutRequestItem[] | n
 }
 
 export async function POST(request: Request) {
-  const payload = (await request.json()) as OrderRequestPayload;
+  const clientIp = getClientIp(request);
+  const rateLimitDecision = consumeOrderAttempt(clientIp);
+
+  if (!rateLimitDecision.ok) {
+    const message =
+      rateLimitDecision.reason === "cooldown"
+        ? "Слишком частая отправка. Подождите немного и попробуйте снова."
+        : "Слишком много попыток оформления заказа. Повторите немного позже.";
+
+    return Response.json(
+      { error: message },
+      {
+        status: 429,
+        ...withRetryAfterHeaders(rateLimitDecision.retryAfterSeconds)
+      }
+    );
+  }
+
+  let payload: OrderRequestPayload;
+
+  try {
+    payload = (await request.json()) as OrderRequestPayload;
+  } catch {
+    return Response.json({ error: "Некорректный формат запроса." }, { status: 400 });
+  }
+
   const customer = validateCustomer(payload.customer);
   const items = validateItems(payload.items);
 
@@ -69,6 +109,17 @@ export async function POST(request: Request) {
     return Response.json(
       { error: "Проверьте данные покупателя и состав корзины." },
       { status: 400 }
+    );
+  }
+
+  const orderFingerprint = buildOrderFingerprint(customer, items);
+
+  if (hasRecentDuplicateOrder(orderFingerprint)) {
+    return Response.json(
+      {
+        error: "Похожий заказ уже был недавно отправлен. Если нужно оформить его снова, подождите пару минут."
+      },
+      { status: 409 }
     );
   }
 
@@ -122,6 +173,7 @@ export async function POST(request: Request) {
   };
 
   await appendOrder(order);
+  rememberSubmittedOrder(orderFingerprint);
 
   return Response.json({
     ok: true,

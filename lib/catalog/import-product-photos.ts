@@ -12,6 +12,7 @@ import {
   getPhotoImportDashboard,
   startPhotoImportAttempt
 } from "@/lib/catalog/photo-import-state";
+import { pruneStoredFiles } from "@/lib/storage/retention";
 
 const execFileAsync = promisify(execFile);
 
@@ -19,6 +20,7 @@ const STORAGE_DIR = path.join(process.cwd(), "storage");
 const PHOTO_ARCHIVES_DIR = path.join(STORAGE_DIR, "photo-archives");
 const CURRENT_PHOTO_MANIFEST_PATH = path.join(STORAGE_DIR, "current-product-media.generated.json");
 const CURRENT_PHOTO_OUTPUT_DIR = path.join(STORAGE_DIR, "product-images", "articles");
+const STORED_PHOTO_ARCHIVE_LIMIT = 10;
 
 function sanitizeFilename(value: string): string {
   return value.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, "") || "product-photos.zip";
@@ -115,6 +117,7 @@ export async function importProductPhotosFromBuffer(
   const storedArchivePath = path.join(PHOTO_ARCHIVES_DIR, datedName);
 
   await writeFile(storedArchivePath, content);
+  await pruneStoredFiles(PHOTO_ARCHIVES_DIR, STORED_PHOTO_ARCHIVE_LIMIT);
 
   return importProductPhotosFromStoredArchive(datedName, fileName);
 }
