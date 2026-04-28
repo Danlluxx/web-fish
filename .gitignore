@@ -7,7 +7,7 @@ node_modules
 .env.production
 .env.development
 Archive.zip
-1AquaMarketPhotos
-data/orders
-storage
+/1AquaMarketPhotos
+/data/orders
+/storage
 tsconfig.tsbuildinfo
