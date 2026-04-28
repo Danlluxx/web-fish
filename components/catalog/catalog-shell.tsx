@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { Pagination } from "@/components/catalog/pagination";
 import { ProductCard } from "@/components/catalog/product-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildCatalogPath } from "@/lib/catalog/urls";
+import { buildBreadcrumbListSchema } from "@/lib/seo/schema";
 import { formatCount } from "@/lib/catalog/utils";
 import type { CatalogResult, FilterOption } from "@/types/catalog";
 
@@ -82,13 +84,21 @@ export function CatalogShell({
     activeCategoryTitle
       ? { label: activeCategoryTitle, href: buildCatalogPath(activeCategorySlug) }
       : null,
-    activeSubcategoryTitle ? { label: activeSubcategoryTitle } : null
+    activeSubcategoryTitle
+      ? { label: activeSubcategoryTitle, href: buildCatalogPath(activeCategorySlug, activeSubcategorySlug) }
+      : null
   ].filter(Boolean) as { label: string; href?: string }[];
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbItems);
+  const breadcrumbUiItems = breadcrumbItems.map((item, index) => ({
+    label: item.label,
+    href: index === breadcrumbItems.length - 1 ? undefined : item.href
+  }));
 
   return (
     <div className="catalog-layout">
+      <JsonLd data={breadcrumbSchema} />
       <section className="catalog-hero">
-        <Breadcrumbs items={breadcrumbItems} />
+        <Breadcrumbs items={breadcrumbUiItems} />
         <div className="catalog-hero__header">
           <div>
             <span className="eyebrow">Каталог продукции</span>

@@ -5,9 +5,11 @@ import { ProductMediaLightbox } from "@/components/catalog/product-media-lightbo
 import { ProductCard } from "@/components/catalog/product-card";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getProductMedia } from "@/lib/catalog/media-server";
 import { formatPrice } from "@/lib/price";
 import { buildCatalogPath } from "@/lib/catalog/urls";
+import { buildBreadcrumbListSchema, buildProductSchema } from "@/lib/seo/schema";
 import { siteConfig } from "@/lib/site";
 import type { Product } from "@/types/catalog";
 
@@ -19,25 +21,34 @@ interface ProductDetailProps {
 export async function ProductDetail({ product, similarProducts }: ProductDetailProps) {
   const detailTags = Array.from(new Set(product.tags.concat(product.keywords.slice(0, 2))));
   const media = await getProductMedia(product);
+  const breadcrumbItems = [
+    { label: "Главная", href: "/" },
+    { label: "Каталог", href: "/catalog" },
+    {
+      label: product.category,
+      href: buildCatalogPath(product.categorySlug)
+    },
+    {
+      label: product.subcategory,
+      href: buildCatalogPath(product.categorySlug, product.subcategorySlug)
+    },
+    {
+      label: product.title,
+      href: `/products/${product.slug}`
+    }
+  ];
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbItems);
+  const productSchema = buildProductSchema(product, media);
 
   return (
     <div className="product-detail-layout">
+      <JsonLd data={breadcrumbSchema} />
+      <JsonLd data={productSchema} />
       <section className="product-detail">
-        <Breadcrumbs
-          items={[
-            { label: "Главная", href: "/" },
-            { label: "Каталог", href: "/catalog" },
-            {
-              label: product.category,
-              href: buildCatalogPath(product.categorySlug)
-            },
-            {
-              label: product.subcategory,
-              href: buildCatalogPath(product.categorySlug, product.subcategorySlug)
-            },
-            { label: product.title }
-          ]}
-        />
+        <Breadcrumbs items={breadcrumbItems.map((item, index) => ({
+          label: item.label,
+          href: index === breadcrumbItems.length - 1 ? undefined : item.href
+        }))} />
 
         <div className="product-detail__grid">
           <ProductMediaLightbox media={media} productTitle={product.title} />
