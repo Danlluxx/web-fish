@@ -92,8 +92,8 @@ function MaxIcon() {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div className="shell site-footer__inner">
-        <div className="site-footer__top">
+      <div className="shell">
+        <div className="site-footer__inner">
           <div>
             <strong>{siteConfig.name}</strong>
             <p>Компактный каталог для быстрого просмотра рыб, растений, амфибий и беспозвоночных.</p>
@@ -103,7 +103,6 @@ export function SiteFooter() {
             Скачать Excel-прайс
           </a>
         </div>
-
         <div className="site-footer__socials" aria-label="Ссылки на мессенджеры">
           <a
             href={siteConfig.telegramUrl}

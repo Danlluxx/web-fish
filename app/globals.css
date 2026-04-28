@@ -2167,6 +2167,11 @@ p {
 }
 
 .site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 72px;
   padding: 20px 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
@@ -2174,19 +2179,12 @@ p {
   box-shadow: var(--shadow);
 }
 
-.site-footer__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  min-height: 72px;
-}
-
 .site-footer__socials {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
-  padding-top: 4px;
+  margin-top: 14px;
 }
 
 .site-footer__social-link {
@@ -2522,12 +2520,6 @@ p {
 
   .site-footer__top {
     width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .site-footer__socials {
-    padding-top: 0;
   }
 
   .hero-panel,
