@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from collections import OrderedDict
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from zoneinfo import ZoneInfo
 
 
@@ -21,8 +21,8 @@ NS = {
     "pkgrel": "http://schemas.openxmlformats.org/package/2006/relationships",
 }
 
-CATEGORY_STYLE_IDS = {"4", "8", "9", "10", "15", "18", "20"}
-SUBCATEGORY_STYLE_IDS = {"6", "11"}
+CATEGORY_STYLE_IDS = {"4", "8", "9", "13", "15", "16", "17", "18", "20"}
+SUBCATEGORY_STYLE_IDS = {"6", "10", "11"}
 
 TRANSLIT_MAP = {
     "а": "a",
@@ -67,6 +67,8 @@ CATEGORY_DESCRIPTIONS = {
     "Растения": "Каталог аквариумных растений."
 }
 
+TOP_LEVEL_CATEGORY_TITLES = set(CATEGORY_DESCRIPTIONS.keys())
+
 
 def normalize_spaces(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
@@ -96,7 +98,14 @@ def extract_title_and_sheet(zip_file: zipfile.ZipFile) -> tuple[str, ET.Element]
     workbook = ET.fromstring(zip_file.read("xl/workbook.xml"))
     sheet = workbook.find("main:sheets", NS)[0]
     target = rel_map[sheet.attrib["{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"]]
-    return sheet.attrib["name"], ET.fromstring(zip_file.read("xl/" + target.lstrip("/")))
+    workbook_path = PurePosixPath("xl/workbook.xml")
+
+    if target.startswith("/"):
+        resolved_target = PurePosixPath(target.lstrip("/"))
+    else:
+        resolved_target = workbook_path.parent / target
+
+    return sheet.attrib["name"], ET.fromstring(zip_file.read(str(resolved_target)))
 
 
 def load_shared_strings(zip_file: zipfile.ZipFile) -> list[str]:
@@ -250,7 +259,10 @@ def parse_catalog(source: Path, source_display_name: str | None = None) -> dict:
                 continue
 
             if len(nonempty) == 1:
-                if style in CATEGORY_STYLE_IDS and first:
+                is_known_top_level_category = first in TOP_LEVEL_CATEGORY_TITLES
+                is_legacy_category_row = style in CATEGORY_STYLE_IDS and first and current_category is None
+
+                if is_known_top_level_category or is_legacy_category_row:
                     current_category = first
                     current_subcategory = None
                     sections.setdefault(
@@ -262,7 +274,7 @@ def parse_catalog(source: Path, source_display_name: str | None = None) -> dict:
                             subcategories=OrderedDict(),
                         ),
                     )
-                elif style in SUBCATEGORY_STYLE_IDS and first and current_category:
+                elif first and current_category:
                     current_subcategory = first
                     section = sections.setdefault(
                         current_category,
