@@ -63,29 +63,6 @@ const ORDER_STEPS = [
   }
 ];
 
-const TRUST_POINTS = [
-  {
-    icon: DeliveryTruckIcon,
-    title: "Отправка по России",
-    description: "Собрали удобный путь от выбора товара до доставки."
-  },
-  {
-    icon: DocumentIcon,
-    title: "Актуальный прайс",
-    description: "Каталог и Excel-прайс синхронизируются после обновления."
-  },
-  {
-    icon: SendIcon,
-    title: "Поддержка в мессенджерах",
-    description: "Можно быстро уточнить наличие, фото и детали заказа."
-  },
-  {
-    icon: ShieldIcon,
-    title: "Понятная структура",
-    description: "Сначала основные категории, потом удобный вход в нужный раздел."
-  }
-];
-
 const INFO_CARDS = [
   {
     id: "about",
@@ -108,63 +85,65 @@ const INFO_CARDS = [
 ];
 
 function CategoryGlyph({ slug }: { slug: string }) {
-  const commonProps = {
-    fill: "none",
-    stroke: "currentColor",
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    strokeWidth: 1.8
-  };
-
   switch (slug) {
     case "ryby":
       return (
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path {...commonProps} d="M7 24c5-8 13-12 23-12 4 0 8 1 11 3-2 1-3 3-3 5s1 4 3 5c-3 2-7 3-11 3-10 0-18-4-23-12Z" />
-          <path {...commonProps} d="M30 18c-2 2-3 4-3 6s1 4 3 6" />
-          <path {...commonProps} d="M14 24h10" />
-          <circle cx="35" cy="21" r="1.8" fill="currentColor" />
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M18 51c7-15 20-24 38-24 10 0 20 4 26 10l10-8v13c4 3 6 6 6 9s-2 6-6 9v13l-10-8c-6 6-16 10-26 10-18 0-31-9-38-24Zm17-5c0 2 2 4 4 4s4-2 4-4-2-4-4-4-4 2-4 4Z" />
+            <path d="M50 48c7 0 13 2 18 5-5 4-11 6-18 6-8 0-15-2-22-6 7-3 14-5 22-5Z" opacity="0.18" />
+          </g>
         </svg>
       );
     case "bespozvonochnye":
       return (
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path {...commonProps} d="M14 26c0-6 4-10 10-10s10 4 10 10c0 4-2 7-5 8" />
-          <path {...commonProps} d="M19 20c-3-1-6 0-8 3" />
-          <path {...commonProps} d="M29 20c3-1 6 0 8 3" />
-          <path {...commonProps} d="M19 31c-3 1-5 3-6 6" />
-          <path {...commonProps} d="M29 31c3 1 5 3 6 6" />
-          <path {...commonProps} d="M24 16v20" />
-          <path {...commonProps} d="M18 26h12" />
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <ellipse cx="50" cy="55" rx="18" ry="16" />
+            <circle cx="50" cy="32" r="9" />
+            <circle cx="36" cy="41" r="5" />
+            <circle cx="64" cy="41" r="5" />
+            <path d="M30 54H16v-4h14zM84 54H70v-4h14zM31 63 16 72l-2-4 15-9zM69 63l15 9-2 4-15-9zM37 31l-9-10 3-3 9 10zM63 31l9-10 3 3-9 10z" />
+          </g>
         </svg>
       );
     case "rasteniya":
       return (
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path {...commonProps} d="M24 39V13" />
-          <path {...commonProps} d="M24 20c-7 0-11-4-11-11 7 0 11 4 11 11Z" />
-          <path {...commonProps} d="M24 26c7 0 11-4 11-11-7 0-11 4-11 11Z" />
-          <path {...commonProps} d="M24 32c-6 0-9 3-9 8 6 0 9-3 9-8Z" />
-          <path {...commonProps} d="M24 34c6 0 9 2 9 7-6 0-9-2-9-7Z" />
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M47 82V47h6v35z" />
+            <path d="M49 49c-11 0-19-6-22-18 11 0 19 4 22 13 3-9 11-13 22-13-3 12-11 18-22 18Z" />
+            <path d="M49 62c-9 0-15-5-17-15 9 0 15 3 17 10 2-7 8-10 17-10-2 10-8 15-17 15Z" opacity="0.82" />
+            <path d="M49 76c-8 0-13-4-15-12 8 0 13 2 15 8 2-6 7-8 15-8-2 8-7 12-15 12Z" opacity="0.64" />
+          </g>
         </svg>
       );
     case "amfibii":
       return (
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path {...commonProps} d="M12 29c0-7 5-12 12-12s12 5 12 12c0 4-2 7-5 9" />
-          <path {...commonProps} d="M19 17c0-3 2-5 5-5s5 2 5 5" />
-          <path {...commonProps} d="M17 28l-5 6" />
-          <path {...commonProps} d="M31 28l5 6" />
-          <path {...commonProps} d="M20 33l-2 7" />
-          <path {...commonProps} d="M28 33l2 7" />
-          <circle cx="21" cy="22" r="1.6" fill="currentColor" />
-          <circle cx="27" cy="22" r="1.6" fill="currentColor" />
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M24 61c0-11 10-20 23-20h8c13 0 23 9 23 20 0 9-7 16-17 18l8 9-5 4-11-12H46L35 92l-5-4 8-9c-10-2-14-9-14-18Z" />
+            <circle cx="40" cy="39" r="7" />
+            <circle cx="60" cy="39" r="7" />
+            <circle cx="40" cy="39" r="2.4" fill="white" />
+            <circle cx="60" cy="39" r="2.4" fill="white" />
+            <path d="M40 63c4 3 16 3 20 0 0 6-4 10-10 10s-10-4-10-10Z" fill="white" opacity="0.9" />
+          </g>
         </svg>
       );
     default:
       return (
         <svg viewBox="0 0 48 48" aria-hidden="true">
-          <circle cx="24" cy="24" r="12" {...commonProps} />
+          <circle
+            cx="24"
+            cy="24"
+            r="12"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       );
   }
@@ -339,24 +318,6 @@ export function HomePage({
             Показаны {featuredProducts.length} из {totalNewArrivals} новых позиций.
           </p>
         ) : null}
-      </section>
-
-      <section className="trust-strip" id="delivery">
-        <div className="trust-strip__grid">
-          {TRUST_POINTS.map((point) => {
-            const Icon = point.icon;
-
-            return (
-              <article key={point.title} className="trust-card">
-                <span className="trust-card__icon">
-                  <Icon />
-                </span>
-                <strong>{point.title}</strong>
-                <span>{point.description}</span>
-              </article>
-            );
-          })}
-        </div>
       </section>
 
       <section className="home-info">

@@ -41,7 +41,7 @@ const MENU_GROUPS: MenuLinkItem[][] = [
   [
     { label: "Скачать актуальный прайс", href: siteConfig.priceListHref, icon: DownloadIcon, note: "Обновляется каждый день", external: true },
     { label: "Как оформить заказ", href: "/#how-to-order", icon: DocumentIcon },
-    { label: "Доставка", href: "/#delivery", icon: DeliveryTruckIcon }
+    { label: "Доставка", href: "/#how-to-order", icon: DeliveryTruckIcon }
   ],
   [
     { label: "Позвонить", href: siteConfig.phoneHref, icon: PhoneIcon, note: siteConfig.phoneLabel },
@@ -202,7 +202,12 @@ export function SiteHeaderClient() {
               <CloseIcon />
             </button>
 
-            <div className="site-drawer__brand">
+            <Link
+              href="/"
+              className="site-drawer__brand"
+              aria-label={`${siteConfig.name} — главная`}
+              onClick={() => setIsMenuOpen(false)}
+            >
               <Image
                 src="/images/branding/vs-o-rybkah-logo.webp"
                 alt={siteConfig.name}
@@ -210,11 +215,11 @@ export function SiteHeaderClient() {
                 height={294}
                 className="site-drawer__brand-logo"
               />
-              <div className="site-drawer__brand-copy">
+              <span className="site-drawer__brand-copy">
                 <strong>Вячеслав о рыбках</strong>
-                <span>аквариумные рыбы и растения</span>
-              </div>
-            </div>
+                <small>аквариумные рыбы и растения</small>
+              </span>
+            </Link>
           </div>
 
           <div className="site-drawer__groups">
