@@ -160,10 +160,6 @@ export function CatalogShell({
       <section className="catalog-grid-section">
         <div className="catalog-grid-section__header">
           <h2>Карточки товаров</h2>
-          <p>
-            Компактная сетка, быстрый поиск и переход к
-            детальной карточке товара без лишних шагов.
-          </p>
         </div>
 
         {result.items.length > 0 ? (

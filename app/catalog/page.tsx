@@ -20,7 +20,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   return (
     <CatalogShell
       title="Каталог товаров"
-      description="Общий список товаров с быстрым поиском по названию, категории и подкатегории."
+      description=""
       result={result}
       query={query}
     />

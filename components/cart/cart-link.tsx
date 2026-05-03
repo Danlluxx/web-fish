@@ -4,11 +4,19 @@ import Link from "next/link";
 
 import { useCart } from "@/components/cart/cart-provider";
 
-export function CartLink() {
+interface CartLinkProps {
+  showLabel?: boolean;
+  className?: string;
+}
+
+export function CartLink({ showLabel = false, className }: CartLinkProps) {
   const { totalQuantity } = useCart();
+  const linkClassName = ["favorites-link", "cart-link", showLabel ? "favorites-link--with-label" : "", className ?? ""]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <Link href="/cart" className="favorites-link cart-link" aria-label="Открыть корзину">
+    <Link href="/cart" className={linkClassName} aria-label="Открыть корзину">
       <svg
         className="cart-link__icon"
         viewBox="0 0 24 24"
@@ -26,6 +34,7 @@ export function CartLink() {
         <circle cx="9" cy="19" r="1.5" fill="currentColor" />
         <circle cx="18" cy="19" r="1.5" fill="currentColor" />
       </svg>
+      {showLabel ? <span className="favorites-link__label">Корзина</span> : null}
       {totalQuantity > 0 ? <span className="favorites-link__count">{totalQuantity}</span> : null}
     </Link>
   );

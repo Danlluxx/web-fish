@@ -1,13 +1,20 @@
 "use client";
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 
-const HERO_SLIDES = Array.from({ length: 14 }, (_, index) => ({
-  src: `/images/home/hero-fish-${index + 1}.webp`,
-  alt: `Аквариумные рыбы и растения, фото ${index + 1}`
+interface HomeHeroGalleryProps {
+  overlay?: ReactNode;
+  className?: string;
+}
+
+const HERO_SLIDE_ORDER = [4, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+
+const HERO_SLIDES = HERO_SLIDE_ORDER.map((index) => ({
+  src: `/images/home/hero-fish-${index}.webp`,
+  alt: `Аквариумные рыбы и растения, фото ${index}`
 }));
 
-export function HomeHeroGallery() {
+export function HomeHeroGallery({ overlay, className }: HomeHeroGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -75,7 +82,7 @@ export function HomeHeroGallery() {
   }
 
   return (
-    <div className="hero-gallery">
+    <div className={className ? `hero-gallery ${className}` : "hero-gallery"}>
       <div className="hero-gallery__viewport">
         <div
           className={`hero-gallery__track ${isDragging ? "is-dragging" : ""}`}
@@ -91,6 +98,8 @@ export function HomeHeroGallery() {
             </div>
           ))}
         </div>
+
+        {overlay ? <div className="hero-gallery__overlay">{overlay}</div> : null}
 
         <button
           type="button"
