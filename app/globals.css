@@ -4510,6 +4510,7 @@ p {
 
   .home-hero__gallery .hero-gallery__image {
     aspect-ratio: 4 / 6.1;
+    object-position: 88% center;
   }
 
   .home-hero__overlay-copy h1 {
