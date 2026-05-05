@@ -110,7 +110,6 @@ export async function ProductDetail({ product, similarProducts }: ProductDetailP
       <section className="related-products">
         <div className="section-header">
           <div>
-            <span className="eyebrow">Похожие товары</span>
             <h2>Позиции из близкой категории</h2>
           </div>
           <Link href={buildCatalogPath(product.categorySlug)} className="section-link">

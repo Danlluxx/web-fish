@@ -37,7 +37,7 @@ function FilterPills({
   allHref,
   allLabel
 }: {
-  label: string;
+  label?: string;
   items: FilterOption[];
   activeSlug?: string;
   buildItemHref: (slug: string) => string;
@@ -46,7 +46,7 @@ function FilterPills({
 }) {
   return (
     <div className="filter-group">
-      <div className="filter-group__label">{label}</div>
+      {label ? <div className="filter-group__label">{label}</div> : null}
       <div className="filter-pills">
         <Link href={allHref} className={`filter-pill ${!activeSlug ? "is-active" : ""}`}>
           {allLabel}
@@ -134,8 +134,8 @@ export function CatalogShell({
           </button>
         </form>
 
-        {activeCategorySlug ? (
-          <div className="filter-stack">
+        <div className="filter-stack">
+          {activeCategorySlug ? (
             <FilterPills
               label="Подкатегории"
               items={result.subcategoryOptions}
@@ -144,8 +144,15 @@ export function CatalogShell({
               allLabel="Все подкатегории"
               buildItemHref={(slug) => buildHref(buildCatalogPath(activeCategorySlug, slug), query)}
             />
-          </div>
-        ) : null}
+          ) : (
+            <FilterPills
+              items={result.categoryOptions}
+              allHref={buildHref("/catalog", query)}
+              allLabel="Все категории"
+              buildItemHref={(slug) => buildHref(buildCatalogPath(slug), query)}
+            />
+          )}
+        </div>
       </section>
 
       <section className="catalog-grid-section">

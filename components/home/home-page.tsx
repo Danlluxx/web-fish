@@ -154,23 +154,27 @@ export function HomePage({
   hasNewArrivals,
   totalNewArrivals,
   fallbackProductsHref,
-  totalProducts
+  totalProducts: _totalProducts
 }: HomePageProps) {
   const orderedSections = HOME_SECTION_ORDER.map((slug) =>
     sections.find((section) => section.slug === slug)
   ).filter((section): section is CatalogSection => Boolean(section));
   const heroBenefits = [
     {
-      title: `Более ${totalProducts} позиций`,
-      description: "рыб, растений и других аквариумных обитателей."
+      title: "Более 400 позиций",
+      description: "редких и популярных видов"
     },
     {
       title: "Низкие цены",
-      description: "работаем напрямую с поставщиками и регулярно обновляем прайс."
+      description: "работаем напрямую с поставщиками"
     },
     {
-      title: "Живые фото товаров",
-      description: "карточки помогают сверяться с наличием и внешним видом."
+      title: "Все что представлено",
+      description: "на сайте на данный момент в наличии"
+    },
+    {
+      title: "Ответственность за доставку",
+      description: "берем на себя"
     }
   ];
 
@@ -270,7 +274,6 @@ export function HomePage({
                 <CategoryGlyph slug={section.slug} />
               </span>
               <strong>{section.title}</strong>
-              <span className="catalog-hub-card__meta">{section.subcategories.length} подкатегорий</span>
             </Link>
           ))}
         </div>
