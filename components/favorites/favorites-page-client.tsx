@@ -27,10 +27,6 @@ export function FavoritesPageClient({ products }: FavoritesPageClientProps) {
           <div>
             <span className="eyebrow">Избранное</span>
             <h1>Сохраненные товары</h1>
-            <p>
-              Здесь отображаются товары, которые вы отметили сердечком. Список хранится локально
-              в браузере.
-            </p>
           </div>
 
           <div className="catalog-hero__stats">

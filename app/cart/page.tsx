@@ -5,7 +5,7 @@ import { getAllProducts } from "@/lib/catalog/service";
 
 export const metadata: Metadata = {
   title: "Корзина",
-  description: "Корзина AquaMarket с оформлением заказа и контактными данными клиента."
+  description: "Корзина с оформлением заказа"
 };
 
 export default async function CartPage() {

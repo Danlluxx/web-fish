@@ -5,11 +5,9 @@ import { HomeHeroGallery } from "@/components/home/home-hero-gallery";
 import {
   CardIcon,
   CartStepIcon,
+  CubeIcon,
   DeliveryTruckIcon,
-  DocumentIcon,
   DownloadIcon,
-  InfoIcon,
-  MailIcon,
   PhoneIcon,
   SendIcon,
   ShieldIcon
@@ -25,7 +23,6 @@ interface HomePageProps {
   totalNewArrivals: number;
   fallbackProductsHref: string;
   totalProducts: number;
-  totalSubcategories: number;
 }
 
 const HOME_SECTION_ORDER = ["ryby", "bespozvonochnye", "rasteniya", "amfibii"] as const;
@@ -63,24 +60,26 @@ const ORDER_STEPS = [
   }
 ];
 
-const INFO_CARDS = [
+const TRUST_ITEMS = [
   {
-    id: "about",
-    icon: InfoIcon,
-    title: "О нас",
-    description: "Мы собираем понятный каталог аквариумных рыб, растений, амфибий и беспозвоночных с быстрым входом в нужный раздел."
+    icon: DeliveryTruckIcon,
+    title: "Отправка по всей России до трех суток",
+    description: ""
   },
   {
-    id: "guarantees",
+    icon: CubeIcon,
+    title: "Надежная упаковка",
+    description: "Гарантия сохранности рыбы"
+  },
+  {
+    icon: SendIcon,
+    title: "Поддержка в мессенджерах",
+    description: "Быстрые ответы"
+  },
+  {
     icon: ShieldIcon,
-    title: "Гарантии",
-    description: "Прайс и каталог синхронизируются после обновления, а перед отправкой мы отдельно подтверждаем состав заказа."
-  },
-  {
-    id: "contacts",
-    icon: MailIcon,
-    title: "Контакты",
-    description: "Связаться можно по телефону, в Telegram или Max. Это самые быстрые каналы для уточнения деталей."
+    title: "Сотни успешных отправок и довольных клиентов",
+    description: ""
   }
 ];
 
@@ -155,8 +154,7 @@ export function HomePage({
   hasNewArrivals,
   totalNewArrivals,
   fallbackProductsHref,
-  totalProducts,
-  totalSubcategories
+  totalProducts
 }: HomePageProps) {
   const orderedSections = HOME_SECTION_ORDER.map((slug) =>
     sections.find((section) => section.slug === slug)
@@ -173,10 +171,6 @@ export function HomePage({
     {
       title: "Живые фото товаров",
       description: "карточки помогают сверяться с наличием и внешним видом."
-    },
-    {
-      title: `${totalSubcategories} подкатегорий`,
-      description: "каталог уже разбит по видам, чтобы путь к нужному товару был короче."
     }
   ];
 
@@ -277,7 +271,6 @@ export function HomePage({
               </span>
               <strong>{section.title}</strong>
               <span className="catalog-hub-card__meta">{section.subcategories.length} подкатегорий</span>
-              <p>{section.description}</p>
             </Link>
           ))}
         </div>
@@ -320,29 +313,18 @@ export function HomePage({
         ) : null}
       </section>
 
-      <section className="home-info">
-        <div className="home-info__grid">
-          {INFO_CARDS.map((item) => {
+      <section className="trust-strip" aria-label="Преимущества магазина">
+        <div className="trust-strip__grid">
+          {TRUST_ITEMS.map((item) => {
             const Icon = item.icon;
 
             return (
-              <article key={item.id} id={item.id} className="home-info-card">
-                <span className="home-info-card__icon">
+              <article key={item.title} className="trust-card">
+                <span className="trust-card__icon">
                   <Icon />
                 </span>
                 <strong>{item.title}</strong>
-                <p>{item.description}</p>
-                {item.id === "contacts" ? (
-                  <div className="home-info-card__links">
-                    <a href={siteConfig.phoneHref}>{siteConfig.phoneLabel}</a>
-                    <a href={siteConfig.telegramUrl} target="_blank" rel="noreferrer">
-                      Telegram
-                    </a>
-                    <a href={siteConfig.maxUrl} target="_blank" rel="noreferrer">
-                      Max
-                    </a>
-                  </div>
-                ) : null}
+                {item.description ? <span>{item.description}</span> : null}
               </article>
             );
           })}

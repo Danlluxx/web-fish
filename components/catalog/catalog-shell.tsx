@@ -134,17 +134,8 @@ export function CatalogShell({
           </button>
         </form>
 
-        <div className="filter-stack">
-          <FilterPills
-            label="Категории"
-            items={result.categoryOptions}
-            activeSlug={activeCategorySlug}
-            allHref={buildHref("/catalog", query)}
-            allLabel="Все категории"
-            buildItemHref={(slug) => buildHref(buildCatalogPath(slug), query)}
-          />
-
-          {activeCategorySlug ? (
+        {activeCategorySlug ? (
+          <div className="filter-stack">
             <FilterPills
               label="Подкатегории"
               items={result.subcategoryOptions}
@@ -153,8 +144,8 @@ export function CatalogShell({
               allLabel="Все подкатегории"
               buildItemHref={(slug) => buildHref(buildCatalogPath(activeCategorySlug, slug), query)}
             />
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </section>
 
       <section className="catalog-grid-section">

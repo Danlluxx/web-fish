@@ -36,12 +36,8 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.title}
         </Link>
 
-        <div className="product-card__price">{formatPrice(product.price)}</div>
-
-        <div className="product-card__footer">
-          <Link href={productHref} className="product-card__cta">
-            Открыть карточку
-          </Link>
+        <div className="product-card__purchase">
+          <div className="product-card__price">{formatPrice(product.price)}</div>
           <AddToCartButton productSlug={product.slug} productTitle={product.title} />
         </div>
       </div>

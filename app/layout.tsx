@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import localFont from "next/font/local";
 
 import { CartProvider } from "@/components/cart/cart-provider";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
@@ -13,6 +14,13 @@ import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
+
+const nunitoFont = localFont({
+  src: "../public/fonts/Nunito-Variable.ttf",
+  variable: "--font-nunito",
+  display: "swap",
+  weight: "400 900"
+});
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="ru">
-      <body>
+      <body className={`${nunitoFont.className} ${nunitoFont.variable}`}>
         <JsonLd data={organizationSchema} />
         <FavoritesProvider validSlugs={validSlugs}>
           <CartProvider validSlugs={validSlugs}>
