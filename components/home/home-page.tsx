@@ -282,7 +282,7 @@ export function HomePage({
       <section className="featured-products" id="new-arrivals">
         <div className="section-header">
           <div>
-            <span className="eyebrow">Обновление прайса</span>
+            <span className="eyebrow">Новые поступления</span>
             <h2>Новые поступления</h2>
           </div>
           <Link href="/catalog" className="section-link">
@@ -300,8 +300,8 @@ export function HomePage({
           <div className="empty-state">
             <h3>Новых позиций пока нет</h3>
             <p>
-              После следующей загрузки прайса здесь автоматически появятся товары, которых не было
-              в предыдущей версии каталога.
+              Загрузите отдельный Excel-список через админ-панель, и здесь появятся выбранные
+              позиции из текущего каталога.
             </p>
             <Link href={fallbackProductsHref} className="button button--secondary">
               Все товары

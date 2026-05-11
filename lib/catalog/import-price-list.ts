@@ -3,7 +3,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { execFile } from "node:child_process";
 
-import { getRuntimeCatalog, getRuntimeCatalogMeta, type CatalogMeta } from "@/lib/catalog/data-source";
+import { getRuntimeCatalogMeta, type CatalogMeta } from "@/lib/catalog/data-source";
 import { pruneStoredFiles } from "@/lib/storage/retention";
 import type { Product } from "@/types/catalog";
 
@@ -46,38 +46,9 @@ interface GeneratedCatalog {
   products: Array<Omit<Product, "imageAccent">>;
 }
 
-function normalizeText(value: string | null | undefined) {
-  return value?.trim().replace(/\s+/g, " ").toLowerCase() ?? "";
-}
-
-function buildProductIdentity(product: Pick<Product, "article" | "title" | "categorySlug" | "subcategorySlug">) {
-  const normalizedArticle = normalizeText(product.article)?.toUpperCase();
-
-  if (normalizedArticle) {
-    return `article:${normalizedArticle}`;
-  }
-
-  return [
-    "title",
-    normalizeText(product.title),
-    product.categorySlug,
-    product.subcategorySlug
-  ].join("|");
-}
-
-function getNewArrivalSlugs(previousProducts: Product[], nextProducts: Array<Omit<Product, "imageAccent">>) {
-  const previousKeys = new Set(previousProducts.map((product) => buildProductIdentity(product)));
-
-  return nextProducts
-    .filter((product) => !previousKeys.has(buildProductIdentity(product)))
-    .map((product) => product.slug);
-}
-
 export async function importPriceListFromBuffer(fileName: string, content: Buffer): Promise<ImportedPriceListResult> {
   await mkdir(PRICE_LISTS_DIR, { recursive: true });
   await mkdir(STORAGE_DIR, { recursive: true });
-
-  const previousCatalog = await getRuntimeCatalog();
 
   const safeName = sanitizeFilename(fileName);
   const datedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeName}`;
@@ -99,14 +70,9 @@ export async function importPriceListFromBuffer(fileName: string, content: Buffe
 
   const importedRawCatalog = await readFile(CURRENT_CATALOG_PATH, "utf-8");
   const importedCatalog = JSON.parse(importedRawCatalog) as GeneratedCatalog;
-  const newArrivalSlugs = getNewArrivalSlugs(previousCatalog.products, importedCatalog.products);
 
   importedCatalog.meta = {
-    ...importedCatalog.meta,
-    previousSourceFileName: previousCatalog.meta.sourceFileName,
-    previousImportedAt: previousCatalog.meta.importedAt,
-    newArrivalCount: newArrivalSlugs.length,
-    newArrivalSlugs
+    ...importedCatalog.meta
   };
 
   await writeFile(CURRENT_CATALOG_PATH, JSON.stringify(importedCatalog, null, 2) + "\n", "utf-8");

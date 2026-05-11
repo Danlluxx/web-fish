@@ -6,14 +6,12 @@ interface PriceImportFormProps {
   currentSourceFileName: string;
   importedAt: string;
   productCount: number;
-  newArrivalCount: number;
 }
 
 export function PriceImportForm({
   currentSourceFileName,
   importedAt,
-  productCount,
-  newArrivalCount
+  productCount
 }: PriceImportFormProps) {
   const [token, setToken] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -50,7 +48,6 @@ export function PriceImportForm({
         productCount?: number;
         sourceFileName?: string;
         importedAt?: string;
-        newArrivalCount?: number;
       };
 
       if (!response.ok || !payload.ok) {
@@ -59,7 +56,7 @@ export function PriceImportForm({
       }
 
       setStatus(
-        `Прайс обновлён: ${payload.productCount ?? "—"} товаров, источник ${payload.sourceFileName ?? file.name}. Новых позиций: ${payload.newArrivalCount ?? 0}.`
+        `Прайс обновлён: ${payload.productCount ?? "—"} товаров, источник ${payload.sourceFileName ?? file.name}.`
       );
       setError("");
       setFile(null);
@@ -97,10 +94,6 @@ export function PriceImportForm({
                  })}
               </strong>
               <span>время последнего импорта</span>
-            </div>
-            <div className="catalog-hero__stat">
-              <strong>{newArrivalCount}</strong>
-              <span>новых позиций в последнем прайсе</span>
             </div>
           </div>
         </div>

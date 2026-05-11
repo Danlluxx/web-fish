@@ -11,7 +11,6 @@ export default async function AdminPriceListPage() {
       currentSourceFileName={meta.sourceFileName}
       importedAt={meta.importedAt}
       productCount={meta.productCount}
-      newArrivalCount={meta.newArrivalCount ?? 0}
     />
   );
 }

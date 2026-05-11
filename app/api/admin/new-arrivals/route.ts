@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { getAdminImportToken, importPriceListFromBuffer } from "@/lib/catalog/import-price-list";
+import {
+  getAdminNewArrivalsImportToken,
+  importNewArrivalsFromBuffer
+} from "@/lib/catalog/new-arrivals";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const configuredToken = getAdminImportToken();
+  const configuredToken = getAdminNewArrivalsImportToken();
 
   if (!configuredToken) {
     return NextResponse.json(
-      { error: "На сервере не настроен ADMIN_PRICE_IMPORT_TOKEN." },
+      { error: "На сервере не настроен ADMIN_NEW_ARRIVALS_IMPORT_TOKEN или ADMIN_PRICE_IMPORT_TOKEN." },
       { status: 500 }
     );
   }
@@ -32,19 +35,21 @@ export async function POST(request: Request) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const meta = await importPriceListFromBuffer(file.name, buffer);
+    const state = await importNewArrivalsFromBuffer(file.name, buffer);
 
     return NextResponse.json({
       ok: true,
-      productCount: meta.productCount,
-      sourceFileName: meta.sourceFileName,
-      importedAt: meta.importedAt
+      sourceFileName: state.sourceFileName,
+      importedAt: state.importedAt,
+      sourceProductCount: state.sourceProductCount,
+      matchedCount: state.matchedCount,
+      missingCount: state.missingCount
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Неизвестная ошибка импорта.";
 
     return NextResponse.json(
-      { error: `Не удалось импортировать прайс: ${message}` },
+      { error: `Не удалось импортировать новые поступления: ${message}` },
       { status: 500 }
     );
   }

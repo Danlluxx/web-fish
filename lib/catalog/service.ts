@@ -1,4 +1,5 @@
 import { getRuntimeCatalog, getRuntimeCatalogSections } from "@/lib/catalog/data-source";
+import { getCurrentNewArrivalSlugs } from "@/lib/catalog/new-arrivals";
 import { productRepository } from "@/lib/catalog/repository";
 import { clamp, normalizeText } from "@/lib/catalog/utils";
 import type {
@@ -182,16 +183,15 @@ export async function getNewArrivalProducts(limit = 8): Promise<{
   const catalog = await getRuntimeCatalog();
   const allProducts = catalog.products;
   const productMap = new Map(allProducts.map((product) => [product.slug, product]));
-  const slugs = catalog.meta.newArrivalSlugs ?? [];
+  const slugs = await getCurrentNewArrivalSlugs();
 
-  const items = slugs
+  const newArrivalProducts = slugs
     .map((slug) => productMap.get(slug))
-    .filter((product): product is Product => Boolean(product))
-    .slice(0, limit);
+    .filter((product): product is Product => Boolean(product));
 
   return {
-    items,
-    total: catalog.meta.newArrivalCount ?? items.length
+    items: newArrivalProducts.slice(0, limit),
+    total: newArrivalProducts.length
   };
 }
 
