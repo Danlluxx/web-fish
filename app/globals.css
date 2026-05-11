@@ -1697,25 +1697,25 @@ p {
   .home-hero__gallery .hero-gallery__viewport {
     border-radius: 28px;
     overflow: hidden;
-    max-height: min(58vh, 600px);
+    max-height: clamp(540px, 64vh, 640px);
   }
 
   .home-hero__gallery .hero-gallery__image {
     width: 100%;
-    height: min(58vh, 600px);
+    height: clamp(540px, 64vh, 640px);
     aspect-ratio: auto;
     object-position: 68% center;
   }
 
   .hero-gallery__overlay {
-    align-content: end;
-    padding: 20px 28px 22px;
+    align-content: center;
+    padding: 28px 32px;
   }
 
   .home-hero__overlay-copy {
     max-width: min(30%, 320px);
-    gap: 12px;
-    align-content: end;
+    gap: 10px;
+    align-content: center;
   }
 
   .home-hero__overlay-main {
@@ -1723,17 +1723,17 @@ p {
   }
 
   .home-hero__overlay-copy h1 {
-    font-size: clamp(1.3rem, 1.48vw, 1.72rem);
-    line-height: 1.04;
+    font-size: clamp(1.22rem, 1.34vw, 1.56rem);
+    line-height: 1.06;
     font-weight: 700;
   }
 
   .home-hero__accent {
-    font-size: 0.98rem;
+    font-size: 0.94rem;
   }
 
   .home-hero__feature-list {
-    gap: 8px;
+    gap: 7px;
   }
 
   .home-hero__feature-item {
@@ -1752,12 +1752,12 @@ p {
   }
 
   .home-hero__feature-copy strong {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
   }
 
   .home-hero__feature-copy small {
-    font-size: 0.72rem;
-    line-height: 1.26;
+    font-size: 0.68rem;
+    line-height: 1.22;
   }
 
   .home-hero__cta-row {
@@ -1766,36 +1766,36 @@ p {
 
   .home-hero__price-link,
   .home-hero__catalog-link {
-    min-height: 54px;
-    padding: 0 16px;
+    min-height: 50px;
+    padding: 0 15px;
     border-radius: 18px;
   }
 
   .home-hero__price-copy strong,
   .home-hero__catalog-link {
-    font-size: 0.88rem;
+    font-size: 0.84rem;
   }
 
   .home-hero__price-copy small {
-    font-size: 0.74rem;
+    font-size: 0.7rem;
   }
 
   .home-hero__catalog-link {
-    min-width: 188px;
+    min-width: 168px;
   }
 
   .home-hero__price-link {
-    min-height: 60px;
-    padding: 0 18px;
+    min-height: 54px;
+    padding: 0 16px;
     border-radius: 18px;
   }
 
   .home-hero__price-copy strong {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 
   .home-hero__price-copy small {
-    font-size: 0.76rem;
+    font-size: 0.7rem;
   }
 
   .order-flow {

@@ -36,7 +36,7 @@ interface MenuLinkItem {
 const MENU_GROUPS: MenuLinkItem[][] = [
   [
     { label: "Каталог", href: "/catalog", icon: CatalogGridIcon },
-    { label: "Новое поступление", href: "/#new-arrivals", icon: CubeIcon }
+    { label: "Новое поступление", href: "/new-arrivals", icon: CubeIcon }
   ],
   [
     { label: "Скачать актуальный прайс", href: siteConfig.priceListHref, icon: DownloadIcon, note: "Обновляется каждый день", external: true },

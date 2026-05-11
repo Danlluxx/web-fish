@@ -176,7 +176,7 @@ export async function getAllProducts(): Promise<Product[]> {
   return productRepository.getAll();
 }
 
-export async function getNewArrivalProducts(limit = 8): Promise<{
+export async function getNewArrivalProducts(limit?: number): Promise<{
   items: Product[];
   total: number;
 }> {
@@ -190,7 +190,7 @@ export async function getNewArrivalProducts(limit = 8): Promise<{
     .filter((product): product is Product => Boolean(product));
 
   return {
-    items: newArrivalProducts.slice(0, limit),
+    items: typeof limit === "number" ? newArrivalProducts.slice(0, limit) : newArrivalProducts,
     total: newArrivalProducts.length
   };
 }

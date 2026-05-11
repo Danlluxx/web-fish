@@ -35,7 +35,7 @@ export function PhoneIcon(props: IconProps) {
   return (
     <svg {...baseProps(props)}>
       <path
-        d="M6.8 5.2C7.3 4.7 8.1 4.7 8.7 5.1L10.8 6.5C11.4 6.9 11.7 7.7 11.4 8.3L10.6 10C11.4 11.7 12.7 13 14.4 13.8L16.1 13C16.7 12.7 17.5 13 17.9 13.6L19.3 15.7C19.7 16.3 19.7 17.1 19.2 17.6L18.2 18.6C17.4 19.4 16.2 19.7 15.1 19.3C11.2 17.9 8 14.7 6.6 10.8C6.2 9.7 6.5 8.5 7.3 7.7L6.8 5.2Z"
+        d="M7.2 4.8C7.7 4.3 8.5 4.2 9.1 4.6L11 6C11.6 6.4 11.8 7.1 11.5 7.7L10.6 9.5C11.3 11.5 12.8 13.1 14.8 13.8L16.6 12.9C17.2 12.6 17.9 12.8 18.3 13.4L19.7 15.3C20.1 15.9 20 16.7 19.5 17.2L18.4 18.3C17.5 19.2 16.2 19.5 15 19.1C10.5 17.7 6.9 14.1 5.5 9.6C5.1 8.4 5.4 7.1 6.3 6.2L7.2 4.8Z"
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
@@ -102,10 +102,23 @@ export function DocumentIcon(props: IconProps) {
 export function DeliveryTruckIcon(props: IconProps) {
   return (
     <svg {...baseProps(props)}>
-      <path d="M4 7H14V15H4V7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M14 10H18L20 12V15H14V10Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <circle cx="8" cy="17.5" r="1.5" fill="currentColor" />
-      <circle cx="17" cy="17.5" r="1.5" fill="currentColor" />
+      <path
+        d="M3.8 7.2H13.8V15.2H3.8V7.2Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.8 10H17.2L20.2 12.9V15.2H13.8V10Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M3.8 15.2H6.5M11.2 15.2H15.3M19.9 15.2H20.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="8.8" cy="17.2" r="1.5" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17.2" cy="17.2" r="1.5" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }

@@ -285,8 +285,8 @@ export function HomePage({
             <span className="eyebrow">Новые поступления</span>
             <h2>Новые поступления</h2>
           </div>
-          <Link href="/catalog" className="section-link">
-            Смотреть все
+          <Link href="/new-arrivals" className="section-link">
+            Смотреть еще
           </Link>
         </div>
 
