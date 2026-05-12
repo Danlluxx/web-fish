@@ -4518,7 +4518,7 @@ p {
 
   .home-hero__gallery .hero-gallery__image {
     aspect-ratio: 4 / 6.1;
-    object-position: 62% center;
+    object-position: 78% center;
   }
 
   .home-hero__overlay-copy h1 {
@@ -4575,6 +4575,11 @@ p {
 }
 
 @media (max-width: 720px) {
+  .catalog-hub .eyebrow,
+  .featured-products .eyebrow {
+    display: none;
+  }
+
   .featured-products__more {
     align-items: flex-start;
     gap: 12px;
