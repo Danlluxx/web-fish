@@ -285,9 +285,6 @@ export function HomePage({
             <span className="eyebrow">Новые поступления</span>
             <h2>Новые поступления</h2>
           </div>
-          <Link href="/new-arrivals" className="section-link">
-            Смотреть еще
-          </Link>
         </div>
 
         {hasNewArrivals ? (
@@ -310,9 +307,14 @@ export function HomePage({
         )}
 
         {hasNewArrivals && totalNewArrivals > featuredProducts.length ? (
-          <p className="featured-products__note">
-            Показаны {featuredProducts.length} из {totalNewArrivals} новых позиций.
-          </p>
+          <div className="featured-products__more">
+            <p className="featured-products__note">
+              Показаны {featuredProducts.length} из {totalNewArrivals} новых позиций.
+            </p>
+            <Link href="/new-arrivals" className="section-link">
+              Смотреть еще
+            </Link>
+          </div>
         ) : null}
       </section>
 

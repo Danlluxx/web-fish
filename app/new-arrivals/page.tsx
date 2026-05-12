@@ -26,9 +26,7 @@ export default async function NewArrivalsPage() {
 
         <div className="catalog-hero__header">
           <div>
-            <span className="eyebrow">Обновление прайса</span>
             <h1>Новые поступления</h1>
-            <p>Все позиции из последнего файла, загруженного через админ-панель новых поступлений.</p>
           </div>
 
           <div className="catalog-hero__stats">

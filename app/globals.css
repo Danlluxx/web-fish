@@ -2059,10 +2059,18 @@ p {
 }
 
 .featured-products__note {
-  margin: -4px 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
+}
+
+.featured-products__more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: -4px;
 }
 
 .home-hero,
@@ -4510,7 +4518,7 @@ p {
 
   .home-hero__gallery .hero-gallery__image {
     aspect-ratio: 4 / 6.1;
-    object-position: 88% center;
+    object-position: 62% center;
   }
 
   .home-hero__overlay-copy h1 {
@@ -4567,6 +4575,15 @@ p {
 }
 
 @media (max-width: 720px) {
+  .featured-products__more {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .featured-products__more .section-link {
+    flex-shrink: 0;
+  }
+
   .order-flow {
     gap: 14px;
     padding: 16px 12px;
