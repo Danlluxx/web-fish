@@ -41,7 +41,7 @@ const MENU_GROUPS: MenuLinkItem[][] = [
   [
     { label: "Скачать актуальный прайс", href: siteConfig.priceListHref, icon: DownloadIcon, note: "Обновляется каждый день", external: true },
     { label: "Как оформить заказ", href: "/#how-to-order", icon: DocumentIcon },
-    { label: "Доставка", href: "/#how-to-order", icon: DeliveryTruckIcon }
+    { label: "Доставка", href: "/delivery", icon: DeliveryTruckIcon }
   ],
   [
     { label: "Позвонить", href: siteConfig.phoneHref, icon: PhoneIcon, note: siteConfig.phoneLabel },
@@ -49,9 +49,9 @@ const MENU_GROUPS: MenuLinkItem[][] = [
     { label: "Написать в Max", href: siteConfig.maxUrl, icon: MaxBrandIcon, external: true }
   ],
   [
-    { label: "О нас", href: "/#about", icon: InfoIcon },
-    { label: "Гарантии", href: "/#guarantees", icon: ShieldIcon },
-    { label: "Контакты", href: "/#contacts", icon: MailIcon }
+    { label: "О нас", href: "/about", icon: InfoIcon },
+    { label: "Гарантии", href: "/guarantees", icon: ShieldIcon },
+    { label: "Контакты", href: "/contacts", icon: MailIcon }
   ]
 ];
 

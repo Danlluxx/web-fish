@@ -1143,7 +1143,13 @@ p {
   flex: 0 0 100%;
 }
 
+.hero-gallery__picture {
+  display: block;
+  width: 100%;
+}
+
 .hero-gallery__image {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
@@ -2080,6 +2086,242 @@ p {
 .trust-strip,
 .home-info-card {
   scroll-margin-top: 142px;
+}
+
+.info-page {
+  display: grid;
+  gap: 22px;
+}
+
+.info-page__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  min-height: 340px;
+  padding: clamp(24px, 4vw, 52px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: var(--shadow);
+}
+
+.info-page__hero-copy {
+  display: grid;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.info-page__hero h1 {
+  margin: 0;
+  max-width: 780px;
+  color: var(--text);
+  font-size: clamp(2.1rem, 4.4vw, 4.6rem);
+  font-weight: 900;
+  line-height: 0.96;
+  letter-spacing: -0.06em;
+}
+
+.info-page__hero p {
+  margin: 0;
+  max-width: 720px;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.4vw, 1.28rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.info-page__hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(92px, 13vw, 156px);
+  height: clamp(92px, 13vw, 156px);
+  border: 1px solid #d7e8ff;
+  border-radius: 32px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+  color: var(--accent);
+  box-shadow: 0 18px 50px rgba(59, 130, 246, 0.12);
+}
+
+.info-page__hero-icon svg {
+  width: 48%;
+  height: 48%;
+}
+
+.info-page__actions,
+.info-contact-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.info-page__action,
+.info-contact-card__links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid #cfe4ff;
+  border-radius: 999px;
+  color: var(--accent-strong);
+  background: #ffffff;
+  font-size: var(--text-sm);
+  font-weight: 900;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.info-page__action:hover,
+.info-contact-card__links a:hover {
+  transform: translateY(-1px);
+  border-color: #9ec8ff;
+  background: var(--accent-soft);
+}
+
+.info-contact-card__links svg {
+  width: 24px;
+  height: 24px;
+}
+
+.info-page__highlights,
+.info-section__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.info-page__highlight,
+.info-section,
+.info-card,
+.info-contact-card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: var(--shadow-soft);
+}
+
+.info-page__highlight {
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+}
+
+.info-page__highlight strong,
+.info-card h3 {
+  color: var(--text);
+  font-size: var(--text-lg);
+  font-weight: 900;
+  line-height: var(--leading-snug);
+}
+
+.info-page__highlight p,
+.info-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: var(--leading-normal);
+}
+
+.info-page__sections {
+  display: grid;
+  gap: 18px;
+}
+
+.info-section {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.info-section__heading {
+  display: grid;
+  gap: 8px;
+  max-width: 900px;
+}
+
+.info-section h2,
+.info-contact-card h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.45rem, 2.5vw, 2.3rem);
+  font-weight: 900;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.04em;
+}
+
+.info-section__heading p,
+.info-contact-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-md);
+  font-weight: 800;
+  line-height: var(--leading-normal);
+}
+
+.info-card {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+}
+
+.info-card h3 {
+  margin: 0;
+}
+
+.info-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.info-list li {
+  position: relative;
+  min-height: 56px;
+  padding: 15px 18px 15px 46px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--text);
+  background: var(--surface-muted);
+  font-size: var(--text-base);
+  font-weight: 850;
+  line-height: var(--leading-snug);
+}
+
+.info-list li::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.12);
+}
+
+.info-contact-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.info-contact-card > div:first-child {
+  display: grid;
+  gap: 8px;
+  max-width: 760px;
 }
 
 .menu-showcase {
@@ -4518,7 +4760,7 @@ p {
 
   .home-hero__gallery .hero-gallery__image {
     aspect-ratio: 4 / 6.1;
-    object-position: 78% center;
+    object-position: center center;
   }
 
   .home-hero__overlay-copy h1 {
@@ -4575,6 +4817,65 @@ p {
 }
 
 @media (max-width: 720px) {
+  .info-page {
+    gap: 14px;
+  }
+
+  .info-page__hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .info-page__hero h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+    line-height: 0.98;
+  }
+
+  .info-page__hero p {
+    font-size: 0.98rem;
+  }
+
+  .info-page__hero-icon {
+    order: -1;
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+  }
+
+  .info-page__actions,
+  .info-contact-card__links {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .info-page__highlights,
+  .info-section__cards,
+  .info-list {
+    grid-template-columns: 1fr;
+  }
+
+  .info-page__highlight,
+  .info-card,
+  .info-section,
+  .info-contact-card {
+    border-radius: 20px;
+  }
+
+  .info-page__highlight,
+  .info-card {
+    padding: 18px;
+  }
+
+  .info-section {
+    padding: 20px;
+  }
+
+  .info-contact-card {
+    display: grid;
+  }
+
   .catalog-hub .eyebrow,
   .featured-products .eyebrow {
     display: none;
