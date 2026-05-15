@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 
 import {
   getAdminPhotoImportToken,
+  importProductMediaManifestFromBuffer,
   importProductPhotosFromBuffer,
   retryProductPhotosImport
 } from "@/lib/catalog/import-product-photos";
+import { isAdminTokenValid } from "@/lib/security/admin-token";
 
 export const runtime = "nodejs";
 
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
       };
       const token = String(payload.token ?? "").trim();
 
-      if (token !== configuredToken) {
+      if (!isAdminTokenValid(token, configuredToken)) {
         return NextResponse.json({ error: "Неверный токен администратора." }, { status: 401 });
       }
 
@@ -57,7 +59,7 @@ export async function POST(request: Request) {
     const token = String(formData.get("token") ?? "").trim();
     const file = formData.get("file");
 
-    if (token !== configuredToken) {
+    if (!isAdminTokenValid(token, configuredToken)) {
       return NextResponse.json({ error: "Неверный токен администратора." }, { status: 401 });
     }
 
@@ -68,12 +70,19 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!file.name.toLowerCase().endsWith(".zip")) {
-      return NextResponse.json({ error: "Поддерживается только формат .zip." }, { status: 400 });
+    const lowerFileName = file.name.toLowerCase();
+
+    if (!lowerFileName.endsWith(".zip") && !lowerFileName.endsWith(".json")) {
+      return NextResponse.json(
+        { error: "Поддерживается архив .zip или JSON-манифест медиатеки." },
+        { status: 400 }
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const meta = await importProductPhotosFromBuffer(file.name, buffer);
+    const meta = lowerFileName.endsWith(".json")
+      ? await importProductMediaManifestFromBuffer(file.name, buffer)
+      : await importProductPhotosFromBuffer(file.name, buffer);
 
     return NextResponse.json({
       ok: true,

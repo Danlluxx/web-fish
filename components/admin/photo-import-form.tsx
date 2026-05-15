@@ -221,7 +221,7 @@ export function PhotoImportForm({
         <div className="catalog-hero__header">
           <div>
             <span className="eyebrow">Обновление фотографий</span>
-            <h1>Загрузка архива с фотографиями товаров</h1>
+            <h1>Медиатека товаров</h1>
           </div>
 
           <div className="catalog-hero__stats">
@@ -249,8 +249,8 @@ export function PhotoImportForm({
         <div className="catalog-grid-section__header">
           <h2>Обновить фотографии товаров</h2>
           <p>
-            Поддерживается архив `.zip`, внутри которого фотографии разложены по папкам
-            артикулов. Для загрузки используется токен администратора.
+            Для старого режима поддерживается `.zip`. Для S3-хранилища загружайте
+            небольшой `.json`-манифест со ссылками на фотографии.
           </p>
         </div>
 
@@ -267,10 +267,10 @@ export function PhotoImportForm({
           </label>
 
           <label className="checkout-form__field">
-            <span>ZIP-архив с фотографиями</span>
+            <span>ZIP-архив или JSON-манифест медиатеки</span>
             <input
               type="file"
-              accept=".zip,application/zip,application/x-zip-compressed"
+              accept=".zip,.json,application/zip,application/x-zip-compressed,application/json"
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               required
             />
@@ -280,7 +280,7 @@ export function PhotoImportForm({
           {error ? <p className="checkout-form__error">{error}</p> : null}
 
           <button type="submit" className="button button--primary" disabled={isBusy}>
-            {isUploading ? "Загружаем архив..." : "Загрузить и обновить фотографии"}
+            {isUploading ? "Обновляем медиатеку..." : "Загрузить и обновить медиатеку"}
           </button>
         </form>
       </section>

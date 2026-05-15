@@ -3,6 +3,8 @@ import "server-only";
 import { access, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
+import { getConfiguredProductMediaBaseUrl, resolveProductMediaUrl } from "@/lib/catalog/media-url";
+
 interface ProductMediaManifest {
   meta?: {
     sourceFileName?: string;
@@ -18,6 +20,7 @@ export interface RuntimeProductMediaMeta {
   importedAt: string;
   articleCount: number;
   photoCount: number;
+  mediaBaseUrl: string;
 }
 
 const STORAGE_MEDIA_MANIFEST_PATH = path.join(
@@ -88,7 +91,8 @@ export async function getRuntimeProductMediaMeta(): Promise<RuntimeProductMediaM
     sourceFileName: manifest.meta?.sourceFileName ?? "Фотографии ещё не загружались",
     importedAt: manifest.meta?.importedAt ?? "",
     articleCount,
-    photoCount
+    photoCount,
+    mediaBaseUrl: getConfiguredProductMediaBaseUrl()
   };
 }
 
@@ -102,6 +106,7 @@ export async function getRuntimeProductMediaByArticle(
   }
 
   const manifest = await getRuntimeProductMediaManifest();
-  return manifest.articles?.[normalizedArticle] ?? null;
-}
+  const media = manifest.articles?.[normalizedArticle] ?? null;
 
+  return media?.map(resolveProductMediaUrl) ?? null;
+}

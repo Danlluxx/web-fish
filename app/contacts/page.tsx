@@ -21,20 +21,6 @@ export default function ContactsPage() {
         { href: siteConfig.telegramUrl, label: "Написать в Telegram", external: true },
         { href: siteConfig.maxUrl, label: "Написать в Max", external: true }
       ]}
-      highlights={[
-        {
-          title: "Телефон",
-          text: siteConfig.phoneLabel
-        },
-        {
-          title: "Telegram",
-          text: siteConfig.telegramHandle
-        },
-        {
-          title: "Max",
-          text: "Быстрые сообщения по заказам и доставке."
-        }
-      ]}
       sections={[
         {
           title: "По каким вопросам писать",

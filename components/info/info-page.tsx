@@ -28,7 +28,6 @@ interface InfoPageProps {
   lead: string;
   icon: ComponentType<{ className?: string }>;
   actions?: InfoPageAction[];
-  highlights?: InfoPageCard[];
   sections: InfoPageSection[];
 }
 
@@ -48,7 +47,7 @@ function InfoAction({ action }: { action: InfoPageAction }) {
   );
 }
 
-export function InfoPage({ eyebrow, title, lead, icon: Icon, actions, highlights, sections }: InfoPageProps) {
+export function InfoPage({ eyebrow, title, lead, icon: Icon, actions, sections }: InfoPageProps) {
   return (
     <article className="info-page">
       <header className="info-page__hero">
@@ -69,17 +68,6 @@ export function InfoPage({ eyebrow, title, lead, icon: Icon, actions, highlights
           <Icon />
         </span>
       </header>
-
-      {highlights?.length ? (
-        <section className="info-page__highlights" aria-label="Ключевая информация">
-          {highlights.map((item) => (
-            <div className="info-page__highlight" key={item.title}>
-              <strong>{item.title}</strong>
-              <p>{item.text}</p>
-            </div>
-          ))}
-        </section>
-      ) : null}
 
       <div className="info-page__sections">
         {sections.map((section) => (

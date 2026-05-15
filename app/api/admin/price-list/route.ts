@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminImportToken, importPriceListFromBuffer } from "@/lib/catalog/import-price-list";
+import { isAdminTokenValid } from "@/lib/security/admin-token";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
   const token = String(formData.get("token") ?? "").trim();
   const file = formData.get("file");
 
-  if (token !== configuredToken) {
+  if (!isAdminTokenValid(token, configuredToken)) {
     return NextResponse.json({ error: "Неверный токен администратора." }, { status: 401 });
   }
 
