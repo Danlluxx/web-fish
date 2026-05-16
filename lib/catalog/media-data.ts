@@ -79,6 +79,51 @@ function normalizeArticle(value: string | null | undefined): string | null {
   return value.replace(/\s+/g, "").toUpperCase();
 }
 
+const CYRILLIC_ARTICLE_TO_LATIN: Record<string, string> = {
+  А: "A",
+  Б: "B",
+  В: "B",
+  Г: "G",
+  Д: "D",
+  Е: "E",
+  Ё: "E",
+  Ж: "ZH",
+  З: "Z",
+  И: "I",
+  Й: "Y",
+  К: "K",
+  Л: "L",
+  М: "M",
+  Н: "H",
+  О: "O",
+  П: "P",
+  Р: "P",
+  С: "C",
+  Т: "T",
+  У: "Y",
+  Ф: "F",
+  Х: "X",
+  Ц: "TS",
+  Ч: "CH",
+  Ш: "SH",
+  Щ: "SCH",
+  Ъ: "",
+  Ы: "Y",
+  Ь: "",
+  Э: "E",
+  Ю: "YU",
+  Я: "YA"
+};
+
+function buildArticleLookupKeys(article: string): string[] {
+  const transliterated = Array.from(
+    article,
+    (character) => CYRILLIC_ARTICLE_TO_LATIN[character] ?? character
+  ).join("");
+
+  return transliterated === article ? [article] : [article, transliterated];
+}
+
 export async function getRuntimeProductMediaMeta(): Promise<RuntimeProductMediaMeta> {
   const manifest = await getRuntimeProductMediaManifest();
   const articles = manifest.articles ?? {};
@@ -106,7 +151,10 @@ export async function getRuntimeProductMediaByArticle(
   }
 
   const manifest = await getRuntimeProductMediaManifest();
-  const media = manifest.articles?.[normalizedArticle] ?? null;
+  const media =
+    buildArticleLookupKeys(normalizedArticle)
+      .map((lookupKey) => manifest.articles?.[lookupKey])
+      .find((paths): paths is string[] => Boolean(paths?.length)) ?? null;
 
   return media?.map(resolveProductMediaUrl) ?? null;
 }
