@@ -34,8 +34,8 @@ export default async function SubcategoryPage({ params, searchParams }: Subcateg
     notFound();
   }
 
-  const { query, page } = await resolveCatalogSearchParams(searchParams);
-  const result = await getCatalogResult({ categorySlug, subcategorySlug, query, page });
+  const { query, page, sort } = await resolveCatalogSearchParams(searchParams);
+  const result = await getCatalogResult({ categorySlug, subcategorySlug, query, page, sort });
 
   return (
     <CatalogShell
@@ -43,6 +43,7 @@ export default async function SubcategoryPage({ params, searchParams }: Subcateg
       description={subcategory.description}
       result={result}
       query={query}
+      sort={sort}
       activeCategorySlug={section.slug}
       activeSubcategorySlug={subcategory.slug}
       activeCategoryTitle={section.title}

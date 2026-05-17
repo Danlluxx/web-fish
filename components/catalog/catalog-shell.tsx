@@ -7,25 +7,41 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { buildCatalogPath } from "@/lib/catalog/urls";
 import { buildBreadcrumbListSchema } from "@/lib/seo/schema";
 import { formatCount } from "@/lib/catalog/utils";
-import type { CatalogResult, FilterOption } from "@/types/catalog";
+import type { CatalogResult, CatalogSort, FilterOption } from "@/types/catalog";
 
 interface CatalogShellProps {
   title: string;
   description: string;
   result: CatalogResult;
   query?: string;
+  sort?: CatalogSort;
   activeCategorySlug?: string;
   activeSubcategorySlug?: string;
   activeCategoryTitle?: string;
   activeSubcategoryTitle?: string;
 }
 
-function buildHref(basePath: string, query?: string): string {
-  if (!query) {
+const sortOptions: { value?: CatalogSort; label: string }[] = [
+  { label: "Без сортировки" },
+  { value: "price-asc", label: "Цена по возрастанию" },
+  { value: "price-desc", label: "Цена по убыванию" }
+];
+
+function buildHref(basePath: string, query?: string, sort?: CatalogSort): string {
+  if (!query && !sort) {
     return basePath;
   }
 
-  const params = new URLSearchParams({ q: query });
+  const params = new URLSearchParams();
+
+  if (query) {
+    params.set("q", query);
+  }
+
+  if (sort) {
+    params.set("sort", sort);
+  }
+
   return `${basePath}?${params.toString()}`;
 }
 
@@ -72,6 +88,7 @@ export function CatalogShell({
   description,
   result,
   query,
+  sort,
   activeCategorySlug,
   activeSubcategorySlug,
   activeCategoryTitle,
@@ -132,7 +149,23 @@ export function CatalogShell({
           <button type="submit" className="button button--primary">
             Найти
           </button>
+          {sort ? <input type="hidden" name="sort" value={sort} /> : null}
         </form>
+
+        <div className="catalog-sort" aria-label="Сортировка товаров">
+          <span className="catalog-sort__label">Сортировка</span>
+          <div className="catalog-sort__options">
+            {sortOptions.map((option) => (
+              <Link
+                key={option.value ?? "default"}
+                href={buildHref(basePath, query, option.value)}
+                className={`catalog-sort__option ${sort === option.value ? "is-active" : ""}`}
+              >
+                {option.label}
+              </Link>
+            ))}
+          </div>
+        </div>
 
         <div className="filter-stack">
           {activeCategorySlug ? (
@@ -140,16 +173,16 @@ export function CatalogShell({
               label="Подкатегории"
               items={result.subcategoryOptions}
               activeSlug={activeSubcategorySlug}
-              allHref={buildHref(buildCatalogPath(activeCategorySlug), query)}
+              allHref={buildHref(buildCatalogPath(activeCategorySlug), query, sort)}
               allLabel="Все подкатегории"
-              buildItemHref={(slug) => buildHref(buildCatalogPath(activeCategorySlug, slug), query)}
+              buildItemHref={(slug) => buildHref(buildCatalogPath(activeCategorySlug, slug), query, sort)}
             />
           ) : (
             <FilterPills
               items={result.categoryOptions}
-              allHref={buildHref("/catalog", query)}
+              allHref={buildHref("/catalog", query, sort)}
               allLabel="Все категории"
-              buildItemHref={(slug) => buildHref(buildCatalogPath(slug), query)}
+              buildItemHref={(slug) => buildHref(buildCatalogPath(slug), query, sort)}
             />
           )}
         </div>
@@ -176,7 +209,7 @@ export function CatalogShell({
           </div>
         )}
 
-        <Pagination basePath={basePath} page={result.page} totalPages={result.totalPages} query={query} />
+        <Pagination basePath={basePath} page={result.page} totalPages={result.totalPages} query={query} sort={sort} />
       </section>
     </div>
   );

@@ -30,10 +30,13 @@ export interface Product {
   updatedAt: string;
 }
 
+export type CatalogSort = "price-asc" | "price-desc";
+
 export interface CatalogFilters {
   query?: string;
   categorySlug?: string;
   subcategorySlug?: string;
+  sort?: CatalogSort;
   page?: number;
   pageSize?: number;
 }

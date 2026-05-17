@@ -32,8 +32,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     notFound();
   }
 
-  const { query, page } = await resolveCatalogSearchParams(searchParams);
-  const result = await getCatalogResult({ categorySlug, query, page });
+  const { query, page, sort } = await resolveCatalogSearchParams(searchParams);
+  const result = await getCatalogResult({ categorySlug, query, page, sort });
 
   return (
     <CatalogShell
@@ -41,6 +41,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       description={section.description}
       result={result}
       query={query}
+      sort={sort}
       activeCategorySlug={section.slug}
       activeCategoryTitle={section.title}
     />

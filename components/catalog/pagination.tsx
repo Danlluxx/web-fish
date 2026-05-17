@@ -1,13 +1,16 @@
 import Link from "next/link";
 
+import type { CatalogSort } from "@/types/catalog";
+
 interface PaginationProps {
   basePath: string;
   page: number;
   totalPages: number;
   query?: string;
+  sort?: CatalogSort;
 }
 
-function buildHref(basePath: string, page: number, query?: string): string {
+function buildHref(basePath: string, page: number, query?: string, sort?: CatalogSort): string {
   const params = new URLSearchParams();
 
   if (page > 1) {
@@ -18,11 +21,15 @@ function buildHref(basePath: string, page: number, query?: string): string {
     params.set("q", query);
   }
 
+  if (sort) {
+    params.set("sort", sort);
+  }
+
   const suffix = params.toString();
   return suffix ? `${basePath}?${suffix}` : basePath;
 }
 
-export function Pagination({ basePath, page, totalPages, query }: PaginationProps) {
+export function Pagination({ basePath, page, totalPages, query, sort }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
@@ -35,7 +42,7 @@ export function Pagination({ basePath, page, totalPages, query }: PaginationProp
   return (
     <nav className="pagination" aria-label="Пагинация каталога">
       <Link
-        href={buildHref(basePath, Math.max(page - 1, 1), query)}
+        href={buildHref(basePath, Math.max(page - 1, 1), query, sort)}
         className={`pagination__button ${page === 1 ? "is-disabled" : ""}`}
         aria-disabled={page === 1}
       >
@@ -46,7 +53,7 @@ export function Pagination({ basePath, page, totalPages, query }: PaginationProp
         {pages.map((item) => (
           <Link
             key={item}
-            href={buildHref(basePath, item, query)}
+            href={buildHref(basePath, item, query, sort)}
             className={`pagination__page ${item === page ? "is-active" : ""}`}
           >
             {item}
@@ -55,7 +62,7 @@ export function Pagination({ basePath, page, totalPages, query }: PaginationProp
       </div>
 
       <Link
-        href={buildHref(basePath, Math.min(page + 1, totalPages), query)}
+        href={buildHref(basePath, Math.min(page + 1, totalPages), query, sort)}
         className={`pagination__button ${page === totalPages ? "is-disabled" : ""}`}
         aria-disabled={page === totalPages}
       >

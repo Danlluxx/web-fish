@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
-  const { query, page } = await resolveCatalogSearchParams(searchParams);
-  const result = await getCatalogResult({ query, page });
+  const { query, page, sort } = await resolveCatalogSearchParams(searchParams);
+  const result = await getCatalogResult({ query, page, sort });
 
   return (
     <CatalogShell
@@ -23,6 +23,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       description=""
       result={result}
       query={query}
+      sort={sort}
     />
   );
 }

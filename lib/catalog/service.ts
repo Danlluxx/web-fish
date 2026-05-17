@@ -110,6 +110,30 @@ function applyFilters(products: Product[], filters: CatalogFilters): Product[] {
     .map((entry) => entry.product);
 }
 
+function applySorting(products: Product[], filters: CatalogFilters): Product[] {
+  if (!filters.sort) {
+    return products;
+  }
+
+  return [...products].sort((left, right) => {
+    if (left.price === null && right.price === null) {
+      return left.title.localeCompare(right.title, "ru");
+    }
+
+    if (left.price === null) {
+      return 1;
+    }
+
+    if (right.price === null) {
+      return -1;
+    }
+
+    const priceDiff = filters.sort === "price-asc" ? left.price - right.price : right.price - left.price;
+
+    return priceDiff || left.title.localeCompare(right.title, "ru");
+  });
+}
+
 function buildCategoryOptions(products: Product[], sections: CatalogSection[]): FilterOption[] {
   return sections.map((section) => ({
     title: section.title,
@@ -144,7 +168,7 @@ export async function getCatalogResult(filters: CatalogFilters): Promise<Catalog
   const pageSize = filters.pageSize ?? DEFAULT_PAGE_SIZE;
   const sections = await getRuntimeCatalogSections();
   const allProducts = await productRepository.getAll();
-  const filteredProducts = applyFilters(allProducts, filters);
+  const filteredProducts = applySorting(applyFilters(allProducts, filters), filters);
   const total = filteredProducts.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = clamp(filters.page ?? 1, 1, totalPages);
