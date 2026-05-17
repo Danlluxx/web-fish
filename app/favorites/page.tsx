@@ -5,7 +5,7 @@ import { getAllProducts } from "@/lib/catalog/service";
 
 export const metadata: Metadata = {
   title: "Избранное",
-  description: "Список сохраненных товаров AquaMarket."
+  description: "Список сохраненных товаров магазина аквариумной рыбы."
 };
 
 export default async function FavoritesPage() {

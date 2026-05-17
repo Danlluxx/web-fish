@@ -7,7 +7,7 @@ export interface ProductMedia {
 
 export const SHOWCASE_PRODUCT_SLUG = "ryby-labirintovye-terneciya-glofish-zolotaya-2-2-5-sm";
 const PRODUCT_MEDIA_CACHE_VERSION = "20260423";
-const TITLE_ARTICLE_PATTERN = /[\[(]([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})[\])]\s*$/;
+const TITLE_ARTICLE_PATTERN = /[\[(]\s*([A-ZА-ЯЁa-zа-яё]{1,4}\s?\d{2,})\s*[\])]\s*$/;
 
 export const MANUAL_PRODUCT_MEDIA_MAP: Record<string, ProductMedia[]> = {
   [SHOWCASE_PRODUCT_SLUG]: [
