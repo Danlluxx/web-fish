@@ -21,10 +21,9 @@ interface CatalogShellProps {
   activeSubcategoryTitle?: string;
 }
 
-const sortOptions: { value?: CatalogSort; label: string }[] = [
-  { label: "Без сортировки" },
-  { value: "price-asc", label: "Цена по возрастанию" },
-  { value: "price-desc", label: "Цена по убыванию" }
+const sortOptions: { value: CatalogSort; label: string }[] = [
+  { value: "price-asc", label: "Цена: дешевые выше" },
+  { value: "price-desc", label: "Цена: дорогие выше" }
 ];
 
 function buildHref(basePath: string, query?: string, sort?: CatalogSort): string {
@@ -110,6 +109,7 @@ export function CatalogShell({
     label: item.label,
     href: index === breadcrumbItems.length - 1 ? undefined : item.href
   }));
+  const activeSortLabel = sortOptions.find((option) => option.value === sort)?.label ?? "Сортировать по цене";
 
   return (
     <div className="catalog-layout">
@@ -152,19 +152,30 @@ export function CatalogShell({
           {sort ? <input type="hidden" name="sort" value={sort} /> : null}
         </form>
 
-        <div className="catalog-sort" aria-label="Сортировка товаров">
-          <span className="catalog-sort__label">Сортировка</span>
-          <div className="catalog-sort__options">
+        <div className="catalog-sort">
+          <details className="catalog-sort-menu">
+            <summary className="catalog-sort-menu__trigger" aria-label="Открыть сортировку товаров">
+              <span className="catalog-sort-menu__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M5 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M5 17H11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </span>
+              <span>{activeSortLabel}</span>
+            </summary>
+            <div className="catalog-sort-menu__panel" aria-label="Сортировка товаров">
             {sortOptions.map((option) => (
               <Link
-                key={option.value ?? "default"}
+                key={option.value}
                 href={buildHref(basePath, query, option.value)}
                 className={`catalog-sort__option ${sort === option.value ? "is-active" : ""}`}
               >
                 {option.label}
               </Link>
             ))}
-          </div>
+            </div>
+          </details>
         </div>
 
         <div className="filter-stack">
