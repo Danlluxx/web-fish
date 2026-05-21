@@ -6,7 +6,6 @@ import { ProductCard } from "@/components/catalog/product-card";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildCatalogPath } from "@/lib/catalog/urls";
 import { buildBreadcrumbListSchema } from "@/lib/seo/schema";
-import { formatCount } from "@/lib/catalog/utils";
 import type { CatalogResult, CatalogSort, FilterOption } from "@/types/catalog";
 
 interface CatalogShellProps {
@@ -44,7 +43,7 @@ function buildHref(basePath: string, query?: string, sort?: CatalogSort): string
   return `${basePath}?${params.toString()}`;
 }
 
-function FilterPills({
+function FilterMenu({
   label,
   items,
   activeSlug,
@@ -59,25 +58,41 @@ function FilterPills({
   allHref: string;
   allLabel: string;
 }) {
-  return (
-    <div className="filter-group">
-      {label ? <div className="filter-group__label">{label}</div> : null}
-      <div className="filter-pills">
-        <Link href={allHref} className={`filter-pill ${!activeSlug ? "is-active" : ""}`}>
-          {allLabel}
-        </Link>
+  const activeItem = activeSlug ? items.find((item) => item.slug === activeSlug) : undefined;
+  const activeLabel = activeItem?.title ?? allLabel;
 
-        {items.map((item) => (
-          <Link
-            key={item.slug}
-            href={buildItemHref(item.slug)}
-            className={`filter-pill ${activeSlug === item.slug ? "is-active" : ""}`}
-          >
-            <span>{item.title}</span>
-            <small>{item.count}</small>
+  return (
+    <div className="catalog-filter">
+      {label ? <div className="filter-group__label">{label}</div> : null}
+      <details className="catalog-filter-menu">
+        <summary className="catalog-filter-menu__trigger" aria-label={`Открыть меню: ${allLabel.toLowerCase()}`}>
+          <span className="catalog-filter-menu__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 5H10V10H5V5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M14 5H19V10H14V5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M5 14H10V19H5V14Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M14 14H19V19H14V14Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+            </svg>
+          </span>
+          <span>{activeLabel}</span>
+        </summary>
+        <div className="catalog-filter-menu__panel" aria-label={allLabel}>
+          <Link href={allHref} className={`catalog-filter__option ${!activeSlug ? "is-active" : ""}`}>
+            <span>{allLabel}</span>
           </Link>
-        ))}
-      </div>
+
+          {items.map((item) => (
+            <Link
+              key={item.slug}
+              href={buildItemHref(item.slug)}
+              className={`catalog-filter__option ${activeSlug === item.slug ? "is-active" : ""}`}
+            >
+              <span>{item.title}</span>
+              <small>{item.count}</small>
+            </Link>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }
@@ -123,16 +138,6 @@ export function CatalogShell({
             <p>{description}</p>
           </div>
 
-          <div className="catalog-hero__stats">
-            <div>
-              <strong>{formatCount(result.total)}</strong>
-              <span>товаров по текущему фильтру</span>
-            </div>
-            <div>
-              <strong>{formatCount(result.categoryOptions.length)}</strong>
-              <span>категорий в каталоге</span>
-            </div>
-          </div>
         </div>
 
         <form action={basePath} method="get" className="catalog-search">
@@ -152,35 +157,9 @@ export function CatalogShell({
           {sort ? <input type="hidden" name="sort" value={sort} /> : null}
         </form>
 
-        <div className="catalog-sort">
-          <details className="catalog-sort-menu">
-            <summary className="catalog-sort-menu__trigger" aria-label="Открыть сортировку товаров">
-              <span className="catalog-sort-menu__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 7H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M5 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M5 17H11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                </svg>
-              </span>
-              <span>{activeSortLabel}</span>
-            </summary>
-            <div className="catalog-sort-menu__panel" aria-label="Сортировка товаров">
-            {sortOptions.map((option) => (
-              <Link
-                key={option.value}
-                href={buildHref(basePath, query, option.value)}
-                className={`catalog-sort__option ${sort === option.value ? "is-active" : ""}`}
-              >
-                {option.label}
-              </Link>
-            ))}
-            </div>
-          </details>
-        </div>
-
-        <div className="filter-stack">
+        <div className="catalog-controls">
           {activeCategorySlug ? (
-            <FilterPills
+            <FilterMenu
               label="Подкатегории"
               items={result.subcategoryOptions}
               activeSlug={activeSubcategorySlug}
@@ -189,13 +168,39 @@ export function CatalogShell({
               buildItemHref={(slug) => buildHref(buildCatalogPath(activeCategorySlug, slug), query, sort)}
             />
           ) : (
-            <FilterPills
+            <FilterMenu
               items={result.categoryOptions}
               allHref={buildHref("/catalog", query, sort)}
               allLabel="Все категории"
               buildItemHref={(slug) => buildHref(buildCatalogPath(slug), query, sort)}
             />
           )}
+
+          <div className="catalog-sort">
+            <details className="catalog-sort-menu">
+              <summary className="catalog-sort-menu__trigger" aria-label="Открыть сортировку товаров">
+                <span className="catalog-sort-menu__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 7H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    <path d="M5 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    <path d="M5 17H11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <span>{activeSortLabel}</span>
+              </summary>
+              <div className="catalog-sort-menu__panel" aria-label="Сортировка товаров">
+                {sortOptions.map((option) => (
+                  <Link
+                    key={option.value}
+                    href={buildHref(basePath, query, option.value)}
+                    className={`catalog-sort__option ${sort === option.value ? "is-active" : ""}`}
+                  >
+                    {option.label}
+                  </Link>
+                ))}
+              </div>
+            </details>
+          </div>
         </div>
       </section>
 

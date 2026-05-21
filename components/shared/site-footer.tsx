@@ -115,9 +115,6 @@ export function SiteFooter() {
             <MaxIcon />
           </a>
         </div>
-        <a className="site-footer__search-link" href="/popular-searches">
-          Популярные запросы
-        </a>
       </div>
     </footer>
   );
