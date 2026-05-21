@@ -171,14 +171,14 @@ export function SiteHeaderClient() {
             </Link>
           </div>
 
+          <div className="site-header__center-search">
+            <HeaderSearchForm className="header-search header-search--refined" inputId="global-catalog-search" />
+          </div>
+
           <div className="site-header__quick-actions">
             <FavoritesLink showLabel className="site-header__quick-link" />
             <CartLink showLabel className="site-header__quick-link" />
           </div>
-        </div>
-
-        <div className="shell site-header__search-shell">
-          <HeaderSearchForm className="header-search header-search--refined" inputId="global-catalog-search-mobile" />
         </div>
       </div>
 
