@@ -4379,6 +4379,21 @@ p {
   }
 
   .catalog-filter,
+  .catalog-sort {
+    z-index: 0;
+  }
+
+  .catalog-filter:has(.catalog-filter-menu[open]),
+  .catalog-sort:has(.catalog-sort-menu[open]) {
+    z-index: 1;
+  }
+
+  .catalog-filter:focus-within,
+  .catalog-sort:focus-within {
+    z-index: 2;
+  }
+
+  .catalog-filter,
   .catalog-filter-menu,
   .catalog-filter-menu__trigger,
   .catalog-sort,
