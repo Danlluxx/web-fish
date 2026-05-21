@@ -64,7 +64,7 @@ function FilterMenu({
   return (
     <div className="catalog-filter">
       {label ? <div className="filter-group__label">{label}</div> : null}
-      <details className="catalog-filter-menu">
+      <details className="catalog-filter-menu" name="catalog-control-menu">
         <summary className="catalog-filter-menu__trigger" aria-label={`Открыть меню: ${allLabel.toLowerCase()}`}>
           <span className="catalog-filter-menu__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -177,7 +177,7 @@ export function CatalogShell({
           )}
 
           <div className="catalog-sort">
-            <details className="catalog-sort-menu">
+            <details className="catalog-sort-menu" name="catalog-control-menu">
               <summary className="catalog-sort-menu__trigger" aria-label="Открыть сортировку товаров">
                 <span className="catalog-sort-menu__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
