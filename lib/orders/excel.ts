@@ -8,13 +8,14 @@ interface OrderSpreadsheetFile {
   filename: string;
 }
 
-type CellType = "string" | "number";
+type CellType = "string" | "number" | "formula";
 
 interface SheetCell {
   column: number;
   value: string | number;
   type: CellType;
   style: number;
+  formula?: string;
 }
 
 interface SheetRow {
@@ -165,8 +166,20 @@ function buildNumberCell(cell: SheetCell, rowIndex: number): string {
   return `<c r="${getColumnLetter(cell.column)}${rowIndex}" s="${cell.style}"><v>${cell.value}</v></c>`;
 }
 
+function buildFormulaCell(cell: SheetCell, rowIndex: number): string {
+  return `<c r="${getColumnLetter(cell.column)}${rowIndex}" s="${cell.style}"><f>${escapeXml(cell.formula ?? "")}</f><v>${cell.value}</v></c>`;
+}
+
 function buildCellXml(cell: SheetCell, rowIndex: number): string {
-  return cell.type === "number" ? buildNumberCell(cell, rowIndex) : buildInlineStringCell(cell, rowIndex);
+  if (cell.type === "number") {
+    return buildNumberCell(cell, rowIndex);
+  }
+
+  if (cell.type === "formula") {
+    return buildFormulaCell(cell, rowIndex);
+  }
+
+  return buildInlineStringCell(cell, rowIndex);
 }
 
 function buildRowsXml(rows: SheetRow[]): string {
@@ -254,17 +267,17 @@ function buildStylesXml(): string {
     <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>
     <xf numFmtId="0" fontId="2" fillId="2" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
     <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/>
-    <xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
+    <xf numFmtId="1" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
       <alignment horizontal="right" vertical="center"/>
     </xf>
     <xf numFmtId="0" fontId="3" fillId="3" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1">
       <alignment horizontal="center" vertical="center"/>
     </xf>
     <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/>
-    <xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
+    <xf numFmtId="1" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
       <alignment horizontal="right" vertical="center"/>
     </xf>
-    <xf numFmtId="3" fontId="2" fillId="4" borderId="3" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
+    <xf numFmtId="1" fontId="2" fillId="4" borderId="3" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1" applyAlignment="1">
       <alignment horizontal="right" vertical="center"/>
     </xf>
   </cellXfs>
@@ -280,6 +293,7 @@ function buildWorkbookXml(sheetName: string): string {
   <sheets>
     <sheet name="${escapeXml(sheetName)}" sheetId="1" r:id="rId1"/>
   </sheets>
+  <calcPr calcId="0" fullCalcOnLoad="1" forceFullCalc="1"/>
 </workbook>`;
 }
 
@@ -337,9 +351,16 @@ function buildSheetRows(order: StoredOrder): SheetRow[] {
         ? { column: 2, value: item.price, type: "number", style: 7 }
         : { column: 2, value: "", type: "string", style: 6 },
       { column: 3, value: item.quantity, type: "number", style: 7 },
-      { column: 4, value: (item.price ?? 0) * item.quantity, type: "number", style: 7 }
+      {
+        column: 4,
+        value: (item.price ?? 0) * item.quantity,
+        type: "formula",
+        formula: `B${11 + index}*C${11 + index}`,
+        style: 7
+      }
     ]
   }));
+  const lastProductRow = Math.max(11, 10 + order.items.length);
 
   return [
     {
@@ -371,7 +392,7 @@ function buildSheetRows(order: StoredOrder): SheetRow[] {
       index: 5,
       cells: [
         { column: 1, value: "Телефон", type: "string", style: 2 },
-        { column: 2, value: order.customer.phone, type: "string", style: 3 }
+        { column: 2, value: order.customer.phone.replaceAll("+", ""), type: "string", style: 3 }
       ]
     },
     {
@@ -390,7 +411,7 @@ function buildSheetRows(order: StoredOrder): SheetRow[] {
     },
     {
       index: 8,
-      cells: [{ column: 5, value: "Итоговая сумма", type: "string", style: 2 }]
+      cells: [{ column: 5, value: "Сумма заказа", type: "string", style: 2 }]
     },
     {
       index: 9,
@@ -399,7 +420,13 @@ function buildSheetRows(order: StoredOrder): SheetRow[] {
         { column: 2, value: "Цена", type: "string", style: 5 },
         { column: 3, value: "Заказ", type: "string", style: 5 },
         { column: 4, value: "Сумма", type: "string", style: 5 },
-        { column: 5, value: totalAmount, type: "number", style: 8 }
+        {
+          column: 5,
+          value: totalAmount,
+          type: "formula",
+          formula: `SUM(D11:D${lastProductRow})`,
+          style: 8
+        }
       ]
     },
     ...productRows
